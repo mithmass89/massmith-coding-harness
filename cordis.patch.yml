@@ -1,0 +1,5 @@
+- id: crocodile
+  plugin: ./packages/dsh/src/index.ts
+  config:
+    strict: true
+    verbose: false

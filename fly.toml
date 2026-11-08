@@ -1,0 +1,15 @@
+applications:
+  cli:
+    definition:
+      application:
+        name: crocodile-coding-harness
+        root: .
+        command:
+          - node
+          - --import
+          - tsx
+          - ./dist/cli.ts
+
+vars:
+  VITE_APP_TITLE: Crocodile Coding Harness
+  NODE_ENV: development

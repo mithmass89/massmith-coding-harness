@@ -1,0 +1,15 @@
+{
+	"name": "crocodile-opencode",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"description": "OpenCode plugin adapter for crocodile-coding-harness",
+	"exports": {
+		".": "./src/index.ts",
+		"./rpc": "./src/rpc.ts"
+	},
+	"files": ["src"],
+	"dependencies": {
+		"@opencode/plugin": "latest"
+	}
+}
