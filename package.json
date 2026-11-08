@@ -1,5 +1,5 @@
 {
-	"name": "crocodile-coding-harness",
+	"name": "massmith-coding-harness",
 	"version": "0.1.0",
 	"private": true,
 	"description": "Shared core + adapters for Command Code, OpenCode and DeepSeek Harness — one core, three adapters",
@@ -7,9 +7,9 @@
 	"author": "massmitro89 <mithmass2@gmail.com>",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/mithmass89/crocodile-coding-harness.git"
+		"url": "https://github.com/mithmass89/massmith-coding-harness.git"
 	},
-	"homepage": "https://github.com/mithmass89/crocodile-coding-harness#readme",
+	"homepage": "https://github.com/mithmass89/massmith-coding-harness#readme",
 	"keywords": [
 		"ai-agent",
 		"coding-agent",
@@ -17,7 +17,8 @@
 		"opencode",
 		"deepseek-harness",
 		"plugin",
-		"guardrails"
+		"guardrails",
+		"massmith"
 	],
 	"packageManager": "pnpm@11.7.0",
 	"engines": {

@@ -6,13 +6,13 @@ import {
 	validateCommand
 } from '../../core/src/index.ts';
 
-export default function crocodilePlugin(ctx: any) {
+export default function massmithPlugin(ctx: any) {
 	const strict = ctx.config?.strict !== false;
 
 	// Tool: diff_check
 	ctx.effect(() => {
 		ctx.tools.register({
-			name: 'crocodile_diff_check',
+			name: 'massmith_diff_check',
 			description: 'Check changed files for missing tests and diff size',
 			schema: {
 				type: 'object',
@@ -32,7 +32,7 @@ export default function crocodilePlugin(ctx: any) {
 				return lines.join('\n');
 			}
 		});
-	}, 'crocodile-diff-check-tool');
+	}, 'massmith-diff-check-tool');
 
 	// Tool guard: block dangerous shell
 	ctx.on('tools/pre-execute', async (event: any, next: any) => {
@@ -89,12 +89,12 @@ export default function crocodilePlugin(ctx: any) {
 				};
 			}
 		});
-	}, 'crocodile-review-command');
+	}, 'massmith-review-command');
 
 	// Observe turn end
 	ctx.on('turn/end', () => {
 		try {
-			ctx.telemetry?.event?.('crocodile.turn_end', { ts: Date.now(), summary: summarizeTurn(0, false) });
+			ctx.telemetry?.event?.('massmith.turn_end', { ts: Date.now(), summary: summarizeTurn(0, false) });
 		} catch {
 			// telemetry optional
 		}

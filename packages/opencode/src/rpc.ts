@@ -8,7 +8,7 @@ export const RpcSchema = {
 } as const;
 
 export default Plugin.define({
-	id: 'crocodile-rpc',
+	id: 'massmith-rpc',
 	async setup(ctx) {
 		void ctx;
 		// RPC contract is exported for TUI/GUI parts; server exposes it via ./rpc entry.

@@ -1,9 +1,9 @@
 {
-	"name": "crocodile-opencode",
+	"name": "massmith-opencode",
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
-	"description": "OpenCode plugin adapter for crocodile-coding-harness",
+	"description": "OpenCode plugin adapter for massmith-coding-harness",
 	"exports": {
 		".": "./src/index.ts",
 		"./rpc": "./src/rpc.ts"

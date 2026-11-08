@@ -2,7 +2,7 @@ applications:
   cli:
     definition:
       application:
-        name: crocodile-coding-harness
+        name: massmith-coding-harness
         root: .
         command:
           - node
@@ -11,5 +11,5 @@ applications:
           - ./dist/cli.ts
 
 vars:
-  VITE_APP_TITLE: Crocodile Coding Harness
+  VITE_APP_TITLE: Massmith Coding Harness
   NODE_ENV: development

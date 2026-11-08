@@ -21,7 +21,7 @@ export default function (cmd: ModApi): void | Promise<void> {
 			if (check.blocked) {
 				return {
 					block: true,
-					additionalContext: `Blocked by crocodile-coding-harness: ${check.reason ?? 'dangerous command'}`
+					additionalContext: `Blocked by massmith-coding-harness: ${check.reason ?? 'dangerous command'}`
 				};
 			}
 			void toolName;
@@ -64,13 +64,13 @@ export default function (cmd: ModApi): void | Promise<void> {
 		},
 
 		onRunEnd: async () => {
-			cmd.showEntry('crocodile-summary', { ts: Date.now() });
+			cmd.showEntry('massmith-summary', { ts: Date.now() });
 		}
 	});
 
 	cmd.addTool({
 		schema: {
-			name: 'crocodile_diff_check',
+			name: 'massmith_diff_check',
 			description:
 				'Check changed files for missing tests and diff size. Read-only, safe in plan mode.',
 			input_schema: {
@@ -100,7 +100,7 @@ export default function (cmd: ModApi): void | Promise<void> {
 
 	cmd.addTool({
 		schema: {
-			name: 'crocodile_repo_size',
+			name: 'massmith_repo_size',
 			description: 'Report the number of tracked files in the workspace.',
 			input_schema: { type: 'object', properties: {}, required: [] }
 		},
@@ -140,20 +140,20 @@ export default function (cmd: ModApi): void | Promise<void> {
 	});
 
 	cmd.addCommand({
-		name: 'crocodile-status',
-		description: 'Tampilkan status mod crocodile-coding-harness',
+		name: 'massmith-status',
+		description: 'Tampilkan status mod massmith-coding-harness',
 		handler: () => ({
 			message: `strict=${cmd.getFlag('strict')} verbose=${cmd.getFlag('verbose')} cwd=${cmd.cwd}`
 		})
 	});
 
-	cmd.addRenderer('crocodile-summary', data => {
+	cmd.addRenderer('massmith-summary', data => {
 		const summary = summarizeTurn(0, false);
-		return [`◆ crocodile: ${summary} :: ${JSON.stringify(data)}`];
+		return [`◆ massmith: ${summary} :: ${JSON.stringify(data)}`];
 	});
 
 	cmd.on('tool_errored', () => cmd.ui.notify('tool errored — check feed', 'warning'));
 	cmd.on('run_start', () => {
-		cmd.ui.notify('crocodile-coding-harness active', 'info');
+		cmd.ui.notify('massmith-coding-harness active', 'info');
 	});
 }

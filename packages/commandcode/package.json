@@ -1,9 +1,9 @@
 {
-	"name": "crocodile-commandcode",
+	"name": "massmith-commandcode",
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
-	"description": "Command Code mod adapter for crocodile-coding-harness",
+	"description": "Command Code mod adapter for massmith-coding-harness",
 	"keywords": ["cmd-mod", "cmd-mod-tool", "cmd-mod-command", "cmd-mod-hook"],
 	"commandcode": {
 		"mods": ["./index.ts"]

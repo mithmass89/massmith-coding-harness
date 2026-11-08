@@ -8,7 +8,7 @@ import {
 } from '../../core/src/index.ts';
 
 export default Plugin.define({
-	id: 'crocodile-coding-harness',
+	id: 'massmith-coding-harness',
 	async setup(ctx) {
 		await ctx.storage.set('loaded', true);
 		await ctx.storage.set('version', '0.1.0');
@@ -17,7 +17,7 @@ export default Plugin.define({
 		const verbose = ctx.options.verbose === true;
 
 		await ctx.tool.namespace({
-			name: 'crocodile',
+			name: 'massmith',
 			description: 'Coding guardrails and diff checks'
 		});
 
@@ -34,7 +34,7 @@ export default Plugin.define({
 					required: [],
 					additionalProperties: false
 				},
-				options: { namespace: 'crocodile', codemode: true },
+				options: { namespace: 'massmith', codemode: true },
 				execute: async (input, context) => {
 					await context.progress({ status: 'checking diff' });
 					const files = Array.isArray(input?.files) ? input.files.filter(Boolean) : [];
@@ -54,7 +54,7 @@ export default Plugin.define({
 				name: 'repo_size',
 				description: 'Report number of tracked files',
 				input: { type: 'object', properties: {}, required: [], additionalProperties: false },
-				options: { namespace: 'crocodile', codemode: true },
+				options: { namespace: 'massmith', codemode: true },
 				execute: async () => {
 					return { content: summarizeTurn(0, false) };
 				}
@@ -86,13 +86,13 @@ export default Plugin.define({
 			});
 
 			editor.add({
-				name: 'crocodile-status',
-				description: 'Tampilkan status plugin crocodile',
+				name: 'massmith-status',
+				description: 'Tampilkan status plugin massmith',
 				execute: async ({ sessionID, prompt, delivery }) => {
 					await ctx.session.prompt({
 						...prompt,
 						sessionID,
-						text: `Status crocodile: strict=${strict} verbose=${verbose} location=${ctx.location.directory}`,
+						text: `Status massmith: strict=${strict} verbose=${verbose} location=${ctx.location.directory}`,
 						delivery
 					});
 				}
@@ -105,7 +105,7 @@ export default Plugin.define({
 				event.options.temperature = 0.2;
 			}
 			for (const tool of Object.keys(event.tools)) {
-				if (tool.startsWith('crocodile_') && !tool.includes('diff_check') && !tool.includes('repo_size')) {
+				if (tool.startsWith('massmith_') && !tool.includes('diff_check') && !tool.includes('repo_size')) {
 					delete event.tools[tool];
 				}
 			}
@@ -148,7 +148,7 @@ export default Plugin.define({
 				const resources = event.resources.join(' ');
 				if (resources.includes('--no-verify') || resources.includes('rm -rf')) {
 					event.effect = 'deny';
-					event.message = 'crocodile: dangerous command blocked';
+					event.message = 'massmith: dangerous command blocked';
 				}
 			}
 		});

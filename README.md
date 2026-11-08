@@ -1,10 +1,10 @@
 <div align="center">
 
-# 🐊 Crocodile Coding Harness
+# Massmith Coding Harness
 
 **Shared core + adapters untuk coding yang lebih aman di Command Code, OpenCode, dan DeepSeek Harness.**
 
-*Crocodile bites bad diffs so your agent doesn't ship them.*
+*Massmith guardrails keep bad diffs out of your repo.*
 [![MIT](https://img.shields.io/badge/license-MIT-4c9)](LICENSE)
 [![Node](https://img.shields.io/badge/node-22%2B%20%7C%2024%2B-3b82f6)](https://nodejs.org)
 [![Command Code](https://img.shields.io/badge/commandcode-mod-8b5cf6)](https://commandcode.ai/docs)
@@ -40,10 +40,10 @@
 |:---|:---|
 | **Dangerous-command guard** | Blok `--no-verify`, `rm -rf /`, `drop table`, `git push --force`, dll. Flag `strict=true` aktif secara default. |
 | **Secret redaction** | Redaksi otomatis untuk `api_key=`, `Authorization: Bearer ...`, dan blok `-----BEGIN PRIVATE KEY-----`. |
-| **`crocodile_diff_check`** | Tool read-only: cek file berubah, peringatan file tanpa test, dan batas `maxDiffLines`. |
-| **`crocodile_repo_size`** | Tool read-only: jumlah tracked files (`git ls-files`). |
+| **`massmith_diff_check`** | Tool read-only: cek file berubah, peringatan file tanpa test, dan batas `maxDiffLines`. |
+| **`massmith_repo_size`** | Tool read-only: jumlah tracked files (`git ls-files`). |
 | **`/review`** | Command: review perubahan git untuk keamanan, correctness, dan missing tests. |
-| **`/crocodile-status`** | Command: tampilkan `strict`, `verbose`, `cwd`. |
+| **`/massmith-status`** | Command: tampilkan `strict`, `verbose`, `cwd`. |
 | **`#note`** | Transform input ` #note ` → `noted.`, dan `/review <path>` → prompt review. |
 | **System-prompt tersuntik** | Aturan diff kecil & reviewable, tanpa destructive command, wajib test/typecheck/lint. |
 | **Flag `DEPRECATED`** | Menandai hasil tool yang menyebut `DEPRECATED` agar agent mengangkatnya ke user. |
@@ -56,7 +56,7 @@ Semua fitur ini ditulis sekali di [packages/core/src/index.ts](packages/core/src
 ## Struktur Repo
 
 ```
-crocodile-coding-harness/
+massmith-coding-harness/
 ├── packages/
 │   ├── core/
 │   │   ├── package.json
@@ -114,12 +114,12 @@ cmd mods list
 cmd mods add ./packages/commandcode -g
 ```
 
-**D. Manual:** salin `packages/commandcode/index.ts` ke `~/.commandcode/mods/crocodile.ts` (user) atau `.commandcode/mods/crocodile.ts` (project, butuh workspace trust). Reload dengan `/reload`.
+**D. Manual:** salin `packages/commandcode/index.ts` ke `~/.commandcode/mods/massmith.ts` (user) atau `.commandcode/mods/massmith.ts` (project, butuh workspace trust). Reload dengan `/reload`.
 
 ### Verifikasi
 
 ```bash
-cmd mods list                                  # harus muncul: crocodile-commandcode
+cmd mods list                                  # harus muncul: massmith-commandcode
 cmd mods inspect ./packages/commandcode/index.ts
 cmd -p "halo, apa kabar?" --mod ./packages/commandcode/index.ts   # headless sanity check
 ```
@@ -172,16 +172,16 @@ opencode plugin list
 opencode plugin check
 ```
 
-**C. Manual (local discovery):** taruh di `.opencode/plugins/crocodile/index.ts` — OpenCode auto-load dari sistem file tanpa daftar di config.
+**C. Manual (local discovery):** taruh di `.opencode/plugins/massmith/index.ts` — OpenCode auto-load dari sistem file tanpa daftar di config.
 
 **D. Publish ke npm** (opsional): package ini sudah punya `exports: {".": "./src/index.ts", "./rpc": "./src/rpc.ts"}` dan dependency `@opencode/plugin`. Publish lalu install dengan `opencode plugin add <nama-paket>`.
 
 ### Verifikasi
 
 ```bash
-opencode plugin list              # harus muncul: crocodile-coding-harness
+opencode plugin list              # harus muncul: massmith-coding-harness
 opencode plugin list --builtin
-touch .opencode/plugins/crocodile/index.ts && opencode service restart
+touch .opencode/plugins/massmith/index.ts && opencode service restart
 ```
 
 ### Options
@@ -196,7 +196,7 @@ Passthrough `ctx.options` dari `opencode.jsonc`:
 }
 ```
 
-> Untuk disable: prefix `-` — misal `"-crocodile-coding-harness"` atau `"-*"` untuk semua. Plugin built-in `opencode.config.policy` dan `opencode.provider.opencode` tidak bisa di-disable (policy enforcement).
+> Untuk disable: prefix `-` — misal `"-massmith-coding-harness"` atau `"-*"` untuk semua. Plugin built-in `opencode.config.policy` dan `opencode.provider.opencode` tidak bisa di-disable (policy enforcement).
 
 ---
 
@@ -236,8 +236,8 @@ dsh headless     # one-shot tanpa server
 
 | Nama | Command Code | OpenCode | dsh |
 |:---|:---|:---|:---|
-| Diff check | `crocodile_diff_check` | `crocodile/diff_check` | `crocodile_diff_check` (via `ctx.tools`) |
-| Repo size | `crocodile_repo_size` | `crocodile/repo_size` | — (ditambahkan via `ctx.tools` bila perlu) |
+| Diff check | `massmith_diff_check` | `massmith/diff_check` | `massmith_diff_check` (via `ctx.tools`) |
+| Repo size | `massmith_repo_size` | `massmith/repo_size` | — (ditambahkan via `ctx.tools` bila perlu) |
 
 Signature: `{ files?: string[], maxDiffLines?: number }` → teks ringkasan + daftar warning.
 
@@ -246,7 +246,7 @@ Signature: `{ files?: string[], maxDiffLines?: number }` → teks ringkasan + da
 | Nama | Efek |
 |:---|:---|
 | `/review [--staged] [path]` | Review git diff untuk keamanan & missing tests. |
-| `/crocodile-status` | Tampilkan status mod/plugin saat ini. |
+| `/massmith-status` | Tampilkan status mod/plugin saat ini. |
 | `#note` (typed input) | Di-handle jadi row info `noted.` tanpa turn model. |
 
 ### Hooks yang dipasang
@@ -274,8 +274,8 @@ Signature: `{ files?: string[], maxDiffLines?: number }` → teks ringkasan + da
 ### Setup
 
 ```bash
-git clone https://github.com/mithmass89/crocodile-coding-harness.git
-cd crocodile-coding-harness
+git clone https://github.com/mithmass89/massmith-coding-harness.git
+cd massmith-coding-harness
 corepack enable
 pnpm install
 ```
@@ -312,7 +312,7 @@ cmd mods inspect ./packages/commandcode/index.ts
 
 # OpenCode
 opencode plugin list
-touch .opencode/plugins/crocodile/index.ts; opencode service restart
+touch .opencode/plugins/massmith/index.ts; opencode service restart
 
 # dsh
 dsh --profile web --dump-config

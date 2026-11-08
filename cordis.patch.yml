@@ -1,4 +1,4 @@
-- id: crocodile
+- id: massmith
   plugin: ./packages/dsh/src/index.ts
   config:
     strict: true

@@ -1,14 +1,14 @@
-# Crocodile bundle patch for DeepSeek Harness (Cordis)
+# Massmith bundle patch for DeepSeek Harness (Cordis)
 # Mounted as a layer after dsh-base. Replace or insert rows here.
 # See: https://deepseek-harness.github.io/deepseek-harness/en/reference/
 
 ---
-- id: crocodile
+- id: massmith
   plugin: ./src/index.ts
   config:
     strict: true
     verbose: false
-- id: crocodile-diff-check
+- id: massmith-diff-check
   plugin: ./src/index.ts
   config:
     strict: true

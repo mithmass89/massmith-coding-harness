@@ -1,9 +1,9 @@
 {
-	"name": "crocodile-dsh",
+	"name": "massmith-dsh",
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
-	"description": "DeepSeek Harness (Cordis) adapter for crocodile-coding-harness",
+	"description": "DeepSeek Harness (Cordis) adapter for massmith-coding-harness",
 	"keywords": ["dsh-plugin"],
 	"exports": {
 		".": "./src/index.ts"
