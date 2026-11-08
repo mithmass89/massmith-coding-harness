@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wirasolution — Jasa Pembuatan Website Modern | Tanpa Harness</title>
+<meta name="description" content="Wirasolution jasa pembuatan website — versi tanpa Massmith Coding Harness: tanpa guardrail, secret bisa bocor, risiko perintah berbahaya.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f; --bg2:#111118; --card:rgba(255,255,255,.05);
+  --line:rgba(255,255,255,.10); --text:#f5f5f7; --muted:#a1a1aa; --muted2:#71717a;
+  --violet:#71717a; --cyan:#71717a; --pink:#71717a; --lime:#f59e0b; --amber:#fbbf24; --red:#fb7185;
+  --grad:linear-gradient(135deg,#52525b 0%,#71717a 100%);
+  --radius:24px; --shadow:0 24px 60px rgba(0,0,0,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.6}
+h1,h2,h3,.display{font-family:'Space Grotesk','Inter',sans-serif;line-height:1.05;letter-spacing:-.02em}
+a{color:inherit;text-decoration:none}
+.mono{font-family:'JetBrains Mono',monospace}
+.bg-fx{position:fixed;inset:0;z-index:-2;overflow:hidden;background:linear-gradient(180deg,#0a0a0f 0%,#111118 100%)}
+.grid-overlay{position:fixed;inset:0;z-index:-1;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:56px 56px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+nav{position:sticky;top:14px;z-index:50;margin-top:14px}
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 16px 12px 20px;border-radius:999px;background:rgba(15,15,20,.8);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk';font-weight:700;font-size:1.15rem}
+.logo-mark{width:36px;height:36px;border-radius:11px;background:#27272a;display:grid;place-items:center;font-weight:900;color:#a1a1aa}
+.logo span{color:#a1a1aa}
+.nav-links{display:flex;gap:24px;font-size:.92rem;color:var(--muted)}
+.nav-links a{transition:.2s}.nav-links a:hover{color:#fff}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;font-weight:700;font-size:.95rem;border:1px solid transparent;cursor:pointer;transition:.2s;white-space:nowrap}
+.btn-grad{background:#27272a;color:#fff;box-shadow:0 8px 20px rgba(0,0,0,.4)}
+.btn-grad:hover{background:#3f3f46}
+.btn-ghost{background:rgba(255,255,255,.06);border-color:var(--line);color:var(--text)}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.hero{padding:72px 0 30px}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.3);color:#fda4af;font-size:.82rem;font-weight:600}
+.badge i{width:8px;height:8px;border-radius:50%;background:#fb7185}
+.hero h1{font-size:clamp(2.6rem,6vw,4.4rem);margin:20px 0 18px}
+.hero h1 em{font-style:normal;color:#a1a1aa}
+.hero p.lead{color:var(--muted);font-size:1.12rem;max-width:560px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.stats{display:flex;gap:28px;margin-top:36px;flex-wrap:wrap}
+.stat b{font-family:'Space Grotesk';font-size:1.9rem;display:block}
+.stat span{color:var(--muted2);font-size:.85rem}
+.harness-panel{margin-top:38px;padding:22px;border-radius:var(--radius);background:rgba(255,255,255,.04);border:1px solid rgba(251,113,133,.4);backdrop-filter:blur(12px)}
+.harness-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.harness-top h3{font-size:1.05rem;color:#fda4af}
+.harness-top p{color:var(--muted);font-size:.9rem;margin-top:4px}
+.harness-status{display:flex;align-items:center;gap:12px}
+.harness-status .dot-off{width:14px;height:14px;border-radius:50%;background:#fb7185}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+.compare-card{padding:18px;border-radius:18px;border:1px solid var(--line);background:rgba(0,0,0,.25);transition:.35s}
+.compare-card.bad{border-color:rgba(251,113,133,.5);background:rgba(251,113,133,.06)}
+.compare-card.ghost{opacity:.55;filter:saturate(.5)}
+.compare-card h4{font-size:.95rem;margin-bottom:10px}
+.compare-card ul{list-style:none;font-size:.86rem;color:var(--muted)}
+.compare-card li{padding:5px 0;border-bottom:1px dashed rgba(255,255,255,.08);display:flex;justify-content:space-between;gap:8px}
+.compare-card li:last-child{border:0}
+.pill{font-size:.72rem;font-weight:800;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.pill.no{background:rgba(251,113,133,.12);color:#fda4af;border:1px solid rgba(251,113,133,.3)}
+.pill.warn{background:rgba(251,191,36,.12);color:#fcd34d;border:1px solid rgba(251,191,36,.3)}
+.pill.ok{background:rgba(255,255,255,.08);color:#d4d4d8;border:1px solid rgba(255,255,255,.15)}
+.score-row{display:flex;align-items:center;gap:16px;margin-top:16px}
+.score-ring{width:86px;height:86px;flex-shrink:0}
+.score-ring circle{fill:none;stroke-width:8;stroke-linecap:round}
+.score-ring .bgc{stroke:rgba(255,255,255,.08)}
+.score-ring .fgc{stroke:#fb7185;stroke-dasharray:240;stroke-dashoffset:150;transition:stroke-dashoffset 1.2s cubic-bezier(.22,1,.36,1)}
+.score-txt b{font-family:'Space Grotesk';font-size:1.7rem;color:#fda4af}
+.score-txt p{color:var(--muted);font-size:.88rem}
+.preview{border-radius:var(--radius);background:rgba(255,255,255,.03);border:1px solid var(--line);overflow:hidden;box-shadow:var(--shadow);position:relative}
+.preview-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.3)}
+.dot{width:11px;height:11px;border-radius:50%}.dot.r{background:#fb7185}.dot.y{background:#fbbf24}.dot.g{background:#a3e635}
+.preview-bar span{margin-left:8px;font-size:.8rem;color:var(--muted);background:rgba(255,255,255,.06);padding:4px 12px;border-radius:999px}
+.preview-body{padding:26px}
+.mini-hero h3{font-size:1.5rem;line-height:1.15}
+.mini-hero p{color:var(--muted);font-size:.9rem;margin:10px 0 16px}
+.mini-btns{display:flex;gap:8px}
+.mini-btn{padding:9px 16px;border-radius:999px;font-size:.82rem;font-weight:700;background:#3f3f46;color:#fff}
+.mini-btn.ghost{background:rgba(255,255,255,.08);color:var(--text)}
+.mini-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.mini-card{padding:14px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.mini-card i{display:block;font-style:normal;font-size:1.2rem;margin-bottom:6px;color:#71717a}
+.mini-card b{font-size:.82rem;display:block}
+.mini-card span{font-size:.74rem;color:var(--muted2)}
+.warn-overlay{position:absolute;inset:0;display:grid;place-items:center;background:rgba(10,10,20,.65)}
+.warn-box{background:#1a0f1e;border:1px solid rgba(251,113,133,.5);padding:18px 20px;border-radius:16px;max-width:300px;text-align:center}
+.warn-box b{color:var(--red)}
+.warn-box p{font-size:.82rem;color:var(--muted);margin-top:6px}
+.harness-badge{position:absolute;top:14px;right:14px;padding:7px 13px;border-radius:999px;font-size:.75rem;font-weight:800;letter-spacing:.02em;z-index:2;background:#fb7185;color:#fff}
+.terminal{margin-top:18px;border-radius:18px;background:#0a0a0f;border:1px solid var(--line);overflow:hidden}
+.term-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.03)}
+.term-bar span{font-size:.78rem;color:var(--muted)}
+.term-body{padding:16px;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.8;min-height:150px}
+.term-line{opacity:0;transform:translateY(4px);transition:.4s}
+.term-line.show{opacity:1;transform:none}
+.term-line .bad{color:var(--red)} .term-line .dim{color:var(--muted2)} .term-line .info{color:var(--muted)}
+.marquee{overflow:hidden;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:56px;background:rgba(255,255,255,.015)}
+.marquee-track{display:flex;gap:48px;width:max-content;animation:slide 26s linear infinite;font-family:'Space Grotesk';font-weight:600;color:var(--muted2);white-space:nowrap}
+@keyframes slide{to{transform:translateX(-50%)}}
+section{padding:80px 0}
+.sec-head{max-width:680px;margin-bottom:44px}
+.sec-head h2{font-size:clamp(2rem,4.5vw,3rem);margin:14px 0 12px}
+.sec-head p{color:var(--muted)}
+.eyebrow{font-size:.8rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{padding:28px;border-radius:var(--radius);background:var(--card);border:1px solid var(--line);transition:.2s;position:relative;overflow:hidden}
+.card:hover{border-color:rgba(255,255,255,.2)}
+.card .icon{width:52px;height:52px;border-radius:15px;background:#27272a;display:grid;place-items:center;font-size:1.4rem;margin-bottom:16px;color:#a1a1aa}
+.card h3{margin-bottom:8px;font-size:1.15rem}
+.card p{color:var(--muted);font-size:.93rem}
+.card .price{font-family:'Space Grotesk';font-size:1.6rem;margin-top:14px}
+.card .price small{font-size:.85rem;color:var(--muted)}
+.card.popular{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.06)}
+.pop-tag{position:absolute;top:18px;right:18px;background:#27272a;padding:5px 12px;border-radius:999px;font-size:.72rem;font-weight:800;color:#d4d4d8}
+.process{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.step{padding:24px;border-radius:20px;background:var(--card);border:1px solid var(--line)}
+.step-num{width:44px;height:44px;border-radius:50%;background:#27272a;display:grid;place-items:center;font-weight:900;margin-bottom:14px;color:#d4d4d8}
+.step h3{font-size:1rem;margin-bottom:6px}
+.step p{font-size:.87rem;color:var(--muted)}
+.step .tag{margin-top:12px;display:inline-block;font-size:.72rem;padding:4px 10px;border-radius:999px;background:rgba(251,113,133,.1);color:#fda4af;border:1px solid rgba(251,113,133,.25)}
+.playground{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch}
+.pg-box{padding:26px;border-radius:var(--radius);background:var(--card);border:1px solid var(--line)}
+.pg-box h3{margin-bottom:10px}
+.pg-box p{color:var(--muted);font-size:.92rem}
+.pg-input{display:flex;gap:10px;margin-top:16px}
+.pg-input input{flex:1;padding:13px 16px;border-radius:14px;background:rgba(0,0,0,.35);border:1px solid var(--line);color:#fff;font-family:'JetBrains Mono';font-size:.9rem;outline:none}
+.pg-result{margin-top:16px;padding:16px;border-radius:14px;font-size:.9rem;display:none}
+.pg-result.show{display:block;animation:pop .35s}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+.pg-result.blocked{background:rgba(251,113,133,.12);border:1px solid rgba(251,113,133,.4);color:#fecdd3}
+.pg-result.allowed{background:rgba(163,230,53,.1);border:1px solid rgba(163,230,53,.35);color:#d9f99d}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--line);font-size:.8rem;cursor:pointer;transition:.2s}
+.chip:hover{background:rgba(255,255,255,.1)}
+.porto{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.porto-card{border-radius:20px;overflow:hidden;border:1px solid var(--line);background:var(--card);transition:.2s}
+.porto-img{height:160px;position:relative;display:grid;place-items:center;background:#27272a}
+.porto-img span{font-family:'Space Grotesk';font-weight:700;font-size:1.1rem;background:rgba(0,0,0,.4);padding:8px 16px;border-radius:999px}
+.porto-body{padding:18px}
+.porto-body b{display:block;margin-bottom:4px}
+.porto-body span{font-size:.85rem;color:var(--muted)}
+.faq{max-width:820px;margin:0 auto}
+.faq-item{border:1px solid var(--line);border-radius:16px;margin-bottom:12px;background:var(--card);overflow:hidden}
+.faq-q{width:100%;text-align:left;padding:18px 20px;background:none;border:0;color:var(--text);font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:1rem}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease;padding:0 20px;color:var(--muted);font-size:.93rem}
+.faq-item.open .faq-a{max-height:200px;padding-bottom:18px}
+.faq-q::after{content:'+';font-size:1.4rem;color:var(--muted);transition:.3s}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.85rem;font-weight:600;margin-bottom:6px;color:var(--muted)}
+.field input,.field select,.field textarea{width:100%;padding:13px 16px;border-radius:14px;background:rgba(0,0,0,.3);border:1px solid var(--line);color:#fff;outline:none;font-family:inherit}
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,80px);background:#111827;border:1px solid rgba(163,230,53,.4);color:#ecfccb;padding:14px 22px;border-radius:999px;font-weight:600;z-index:100;transition:.4s}
+.toast.show{transform:translate(-50%,0)}
+footer{padding:40px 0;border-top:1px solid var(--line);color:var(--muted2);font-size:.88rem}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
+.reveal.visible{opacity:1;transform:none}
+.float-cta{position:fixed;right:20px;bottom:20px;z-index:60;width:58px;height:58px;border-radius:50%;background:#27272a;display:grid;place-items:center;font-size:1.4rem;cursor:pointer;color:#d4d4d8}
+@media(max-width:900px){
+  .hero-grid,.playground,.contact-grid{grid-template-columns:1fr}
+  .cards,.porto{grid-template-columns:1fr 1fr}
+  .process{grid-template-columns:1fr 1fr}
+  .nav-links{display:none}
+  .compare{grid-template-columns:1fr}
+}
+@media(max-width:560px){.cards,.porto,.process{grid-template-columns:1fr}.stats{gap:18px}}
+</style>
+</head>
+<body>
+<div class="bg-fx"></div>
+<div class="grid-overlay"></div>
+
+<div class="wrap">
+<nav><div class="nav-in">
+  <div class="logo"><div class="logo-mark">W</div>Wira<span>solution</span></div>
+  <div class="nav-links">
+    <a href="#layanan">Layanan</a><a href="#proses">Proses</a><a href="#uji">Uji (Tanpa Harness)</a><a href="#portofolio">Portofolio</a><a href="#harga">Harga</a><a href="#kontak">Kontak</a>
+  </div>
+  <a href="#kontak" class="btn btn-grad">Konsultasi Gratis</a>
+</div></nav>
+
+<header class="hero">
+  <div class="hero-grid">
+    <div>
+      <span class="badge"><i></i> Tanpa Massmith Coding Harness — Guardrail Mati</span>
+      <h1>Website Keren<br>untuk Bisnis <em>Naik Kelas.</em></h1>
+      <p class="lead">Wirasolution bantu UMKM, company profile, toko online, sampai web aplikasi — desain modern, loading cepat, dan aman. Halaman ini dibuat <b style="color:#fff">tanpa harness</b>: perintah berbahaya bisa jalan tanpa rem, secret bisa bocor ke log, dan tidak ada peringatan test hilang. Bandingkan dengan versi <a href="wirasolution-dengan-harness.html" style="text-decoration:underline;color:#67e8f9">dengan harness (98/100) →</a></p>
+      <div class="cta-row">
+        <a href="#uji" class="btn btn-grad">Lihat Risiko Tanpa Harness</a>
+        <a href="#harga" class="btn btn-ghost">Lihat Harga</a>
+      </div>
+      <div class="stats">
+        <div class="stat"><b><span class="count" data-to="120">0</span>+</b><span>Proyek Website</span></div>
+        <div class="stat"><b><span class="count" data-to="54">0</span>%</b><span>Klien Puas</span></div>
+        <div class="stat"><b><span class="count" data-to="18">0</span> hari</b><span>Rata-rata Selesai</span></div>
+      </div>
+
+      <div class="harness-panel">
+        <div class="harness-top">
+          <div>
+            <h3>Status Harness: MATI</h3>
+            <p>Tidak ada guardrail yang berjalan di workflow pembuatan website ini.</p>
+          </div>
+          <div class="harness-status"><span class="dot-off"></span><span class="mono" style="font-size:.85rem;color:#fda4af">strict=off • verbose=off</span></div>
+        </div>
+        <div class="compare">
+          <div class="compare-card bad">
+            <h4>Tanpa Harness (halaman ini)</h4>
+            <ul>
+              <li><span>Dangerous-command guard</span><span class="pill no">Mati</span></li>
+              <li><span>Secret redaction</span><span class="pill no">Mati</span></li>
+              <li><span>Diff check + test warning</span><span class="pill no">Mati</span></li>
+              <li><span>System prompt disiplin</span><span class="pill warn">Acak</span></li>
+              <li><span>Review /review</span><span class="pill no">Tidak ada</span></li>
+            </ul>
+          </div>
+          <div class="compare-card ghost">
+            <h4>Dengan Harness</h4>
+            <ul>
+              <li><span>Dangerous-command guard</span><span class="pill ok">Aktif</span></li>
+              <li><span>Secret redaction</span><span class="pill ok">Aktif</span></li>
+              <li><span>Diff check + test warning</span><span class="pill ok">Aktif</span></li>
+              <li><span>Review /review</span><span class="pill ok">Aktif</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="score-row">
+          <svg class="score-ring" viewBox="0 0 100 100">
+            <circle class="bgc" cx="50" cy="50" r="42"></circle>
+            <circle class="fgc" cx="50" cy="50" r="42" transform="rotate(-90 50 50)"></circle>
+          </svg>
+          <div class="score-txt">
+            <b>42/100</b>
+            <p>Risiko tinggi: perintah berbahaya jalan langsung, secret bocor ke log, dan fitur tanpa test lolos. Lihat versi <a href="wirasolution-dengan-harness.html" style="color:#67e8f9;text-decoration:underline">dengan harness (98/100)</a>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="preview">
+        <div class="harness-badge">TANPA HARNESS</div>
+        <div class="preview-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>wirasolution.id</span></div>
+        <div class="preview-body">
+          <div class="mini-hero">
+            <span class="eyebrow">Jasa Pembuatan Website</span>
+            <h3>Desain Modern,<br>Animasi Halus.</h3>
+            <p>Company profile, landing page, e-commerce — tanpa guardrail, jadi hasil tidak konsisten.</p>
+            <div class="mini-btns"><span class="mini-btn">Mulai Proyek</span><span class="mini-btn ghost">Lihat Portofolio</span></div>
+          </div>
+          <div class="mini-cards">
+            <div class="mini-card"><i>◆</i><b>Landing Page</b><span>Tidak teruji</span></div>
+            <div class="mini-card"><i>◆</i><b>E-Commerce</b><span>Risiko bug</span></div>
+            <div class="mini-card"><i>◆</i><b>Web App</b><span>Tanpa review</span></div>
+          </div>
+        </div>
+        <div class="warn-overlay"><div class="warn-box"><b>Tanpa Harness — Risiko!</b><p>Tidak ada guard untuk perintah berbahaya, secret bisa bocor ke log, dan tidak ada peringatan test hilang.</p></div></div>
+      </div>
+
+      <div class="terminal">
+        <div class="term-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>agent coding — tanpa harness</span></div>
+        <div class="term-body" id="termBody"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="marquee"><div class="marquee-track" id="marquee"></div></div>
+
+<section id="layanan">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Layanan Kami</span>
+    <h2>Semua Kebutuhan Website, Satu Atap.</h2>
+    <p>Dari landing page satu halaman sampai web aplikasi kompleks — tanpa workflow harness, jadi tanpa checklist keamanan dan test.</p>
+  </div>
+  <div class="cards">
+    <div class="card reveal"><div class="icon">◆</div><h3>Landing Page</h3><p>Halaman promosi cepat untuk iklan &amp; campaign. Tanpa guardrail coding, risiko bug tidak terdeteksi.</p><div class="price">Mulai Rp 1,5jt</div></div>
+    <div class="card reveal"><div class="icon">◆</div><h3>Company Profile</h3><p>Website perusahaan profesional. Tanpa review, isi bisa tidak konsisten dan halaman rawan error.</p><div class="price">Mulai Rp 3,5jt</div></div>
+    <div class="card reveal popular"><span class="pop-tag">Paling Laris</span><div class="icon">◆</div><h3>E-Commerce / Toko Online</h3><p>Katalog produk tanpa diff check — fitur baru bisa merusak checkout yang sudah ada.</p><div class="price">Mulai Rp 7,5jt</div></div>
+    <div class="card reveal"><div class="icon">◆</div><h3>Web Aplikasi Custom</h3><p>Dashboard tanpa guardrail: perintah berbahaya bisa jalan, secret bisa bocor ke log.</p><div class="price">Hubungi Kami</div></div>
+    <div class="card reveal"><div class="icon">◆</div><h3>SEO &amp; Kecepatan</h3><p>Tanpa checklist, optimasi bisa terlewat dan Core Web Vitals tidak terpantau.</p><div class="price">Termasuk Paket</div></div>
+    <div class="card reveal"><div class="icon">◆</div><h3>Maintenance &amp; Support</h3><p>Tanpa redaksi secret, kredensial lama bisa bocor saat maintenance.</p><div class="price">Mulai Rp 500rb/bln</div></div>
+  </div>
+</section>
+
+<section id="proses" style="padding-top:20px">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Cara Kerja</span>
+    <h2>Proses Jelas, Tapi Tanpa Rem.</h2>
+    <p>Tanpa harness, tidak ada checklist keamanan dan test di setiap tahap.</p>
+  </div>
+  <div class="process">
+    <div class="step reveal"><div class="step-num">1</div><h3>Brief &amp; Konsultasi</h3><p>Cerita kebutuhan bisnis Anda. Kami petakan halaman, fitur, dan target audiens.</p><span class="tag">Gratis</span></div>
+    <div class="step reveal"><div class="step-num">2</div><h3>Desain UI/UX</h3><p>Mockup modern dengan animasi prototype. Revisi sampai Anda yakin.</p><span class="tag">Revisi 2x</span></div>
+    <div class="step reveal"><div class="step-num">3</div><h3>Development (Tanpa Check)</h3><p>Coding tanpa guardrail: perintah berbahaya jalan langsung, secret tidak diredaksi.</p><span class="tag" style="background:rgba(251,113,133,.1);color:#fda4af;border-color:rgba(251,113,133,.25)">Risiko</span></div>
+    <div class="step reveal"><div class="step-num">4</div><h3>Test &amp; Launch</h3><p>Tanpa diff check, fitur tanpa test bisa lolos dan jadi bug di production.</p><span class="tag" style="background:rgba(251,113,133,.1);color:#fda4af;border-color:rgba(251,113,133,.25)">Tanpa Test</span></div>
+  </div>
+</section>
+
+<section id="uji" style="padding-top:20px">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Uji Tanpa Harness</span>
+    <h2>Lihat Apa yang Terjadi Tanpa Guardrail.</h2>
+    <p>Di halaman ini mode harness <b style="color:#fda4af">MATI</b> — semua perintah <b>dijalan langsung tanpa pemeriksaan</b>, persis seperti agent tanpa guardrail.</p>
+  </div>
+  <div class="playground">
+    <div class="pg-box reveal">
+      <h3>Playground Tanpa Harness</h3>
+      <div class="pg-input">
+        <input id="cmdInput" class="mono" placeholder="misal: git commit --no-verify" value="git commit -m &quot;fix&quot; --no-verify">
+        <button class="btn btn-grad" id="checkBtn">Jalankan</button>
+      </div>
+      <div class="pg-result" id="pgResult"></div>
+      <div class="chips">
+        <span class="chip" data-cmd="git commit -m fix --no-verify">--no-verify</span>
+        <span class="chip" data-cmd="rm -rf /">rm -rf /</span>
+        <span class="chip" data-cmd="git push --force origin main">push --force</span>
+        <span class="chip" data-cmd="ls -la">ls -la</span>
+        <span class="chip" data-cmd="npm run test">npm run test</span>
+      </div>
+    </div>
+    <div class="pg-box reveal">
+      <h3>Risiko Tanpa Harness</h3>
+      <ul style="margin:16px 0 0 18px;color:var(--muted);font-size:.92rem;line-height:2">
+        <li>Perintah <span class="mono">--no-verify</span>, <span class="mono">rm -rf /</span>, <span class="mono">drop table</span> bisa dieksekusi</li>
+        <li><span class="mono">api_key</span> dan <span class="mono">Bearer token</span> bocor ke log / transcript</li>
+        <li>File berubah tanpa test tidak ada peringatannya</li>
+        <li>Tidak ada system prompt disiplin — diff besar tanpa review</li>
+      </ul>
+      <a href="wirasolution-dengan-harness.html" class="btn btn-grad" style="margin-top:18px">Lihat Versi Dengan Harness</a>
+    </div>
+  </div>
+</section>
+
+<section id="portofolio" style="padding-top:20px">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Portofolio</span>
+    <h2>Contoh Hasil Kerja Kami.</h2>
+    <p>Hasil tanpa harness — bentuknya mirip, tapi kualitas dan keamanan tidak terjamin.</p>
+  </div>
+  <div class="porto">
+    <div class="porto-card reveal"><div class="porto-img"><span>Kopi Nusantara</span></div><div class="porto-body"><b>Landing Page Kedai Kopi</b><span>Tanpa diff check • Risiko bug tersembunyi</span></div></div>
+    <div class="porto-card reveal"><div class="porto-img"><span>Klinik Sehat</span></div><div class="porto-body"><b>Company Profile Klinik</b><span>Tanpa review • Data bisa tidak konsisten</span></div></div>
+    <div class="porto-card reveal"><div class="porto-img"><span>Toko FashionKu</span></div><div class="porto-body"><b>E-Commerce Fashion</b><span>Tanpa guardrail • Checkout rawan rusak</span></div></div>
+  </div>
+</section>
+
+<section id="harga" style="padding-top:20px">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Harga Transparan</span>
+    <h2>Pilih Paket Sesuai Bisnis Anda.</h2>
+    <p>Harga sama, tapi tanpa harness Anda kehilangan: guardrail, redaksi secret, diff check, dan review otomatis.</p>
+  </div>
+  <div class="cards">
+    <div class="card reveal"><h3>Starter</h3><p>Landing page 1 halaman untuk promosi cepat.</p><div class="price">Rp 1,5jt <small>/ proyek</small></div><p style="margin-top:12px;font-size:.88rem">✓ 1 Halaman &nbsp;✓ Animasi dasar<br>✗ Tanpa guardrail &nbsp;✗ Tanpa diff check<br>✓ Revisi 1x</p><a href="#kontak" class="btn btn-ghost" style="margin-top:18px;width:100%;justify-content:center">Pilih Starter</a></div>
+    <div class="card popular reveal"><span class="pop-tag">Paling Laris</span><h3>Bisnis</h3><p>Company profile multi-halaman yang profesional.</p><div class="price">Rp 3,5jt <small>/ proyek</small></div><p style="margin-top:12px;font-size:.88rem">✓ 5 Halaman &nbsp;✗ Tanpa guardrail<br>✓ Portofolio &amp; galeri &nbsp;✗ Tanpa redaksi secret<br>✓ Revisi 2x</p><a href="#kontak" class="btn btn-grad" style="margin-top:18px;width:100%;justify-content:center">Pilih Bisnis</a></div>
+    <div class="card reveal"><h3>E-Commerce</h3><p>Toko online lengkap dengan pembayaran.</p><div class="price">Rp 7,5jt <small>/ proyek</small></div><p style="margin-top:12px;font-size:.88rem">✓ Produk &amp; keranjang &nbsp;✗ Tanpa diff check<br>✓ Payment gateway &nbsp;✗ Tanpa review<br>✓ Support 3 bulan</p><a href="#kontak" class="btn btn-ghost" style="margin-top:18px;width:100%;justify-content:center">Pilih E-Commerce</a></div>
+  </div>
+</section>
+
+<section id="kontak" style="padding-top:20px">
+  <div class="sec-head reveal" style="text-align:center;margin-left:auto;margin-right:auto">
+    <span class="eyebrow">Tanya Jawab</span>
+    <h2>Sering Ditanyakan.</h2>
+  </div>
+  <div class="faq">
+    <div class="faq-item reveal"><button class="faq-q">Berapa lama pembuatan website?</button><div class="faq-a">Tanpa harness, estimasi sering meleset karena tidak ada diff check dan test warning. Dengan harness, timeline lebih terukur karena setiap perubahan di-review.</div></div>
+    <div class="faq-item reveal"><button class="faq-q">Apakah domain &amp; hosting termasuk?</button><div class="faq-a">Paket Bisnis ke atas kami bantu daftarkan domain .com dan hosting. Biaya domain/hosting dibayar terpisah sesuai tagihan provider, kami bantu setup-nya.</div></div>
+    <div class="faq-item reveal"><button class="faq-q">Kenapa tanpa harness berisiko?</button><div class="faq-a">Tanpa guardrail, perintah berbahaya bisa dieksekusi, secret bocor ke log, dan fitur tanpa test lolos ke production. Skor kualitasnya 42/100 vs 98/100 dengan harness.</div></div>
+    <div class="faq-item reveal"><button class="faq-q">Bisakah revisi setelah selesai?</button><div class="faq-a">Bisa. Semua paket termasuk revisi minor. Namun tanpa harness, revisi berisiko merusak fitur lain karena tidak ada diff check.</div></div>
+  </div>
+
+  <div class="contact-grid" style="margin-top:36px">
+    <div class="pg-box reveal">
+      <h3>Minta Penawaran Gratis</h3>
+      <p>Ceritakan kebutuhan website Anda — kami balas dengan estimasi &amp; timeline dalam 1x24 jam.</p>
+      <div style="margin-top:18px;font-size:.92rem;color:var(--muted);line-height:2.2">
+        <div>Email: halo@wirasolution.id</div>
+        <div>WhatsApp: +62 812-3456-7890</div>
+        <div>Jam: Senin–Sabtu, 09.00–18.00 WIB</div>
+      </div>
+      <a href="wirasolution-dengan-harness.html" class="btn btn-grad" style="margin-top:16px">Upgrade ke Dengan Harness</a>
+    </div>
+    <form class="pg-box reveal" id="contactForm">
+      <div class="field"><label>Nama Anda</label><input required placeholder="Nama lengkap"></div>
+      <div class="field"><label>Email / WhatsApp</label><input required placeholder="email@contoh.com"></div>
+      <div class="field"><label>Jenis Website</label><select><option>Landing Page</option><option>Company Profile</option><option>E-Commerce</option><option>Web Aplikasi Custom</option></select></div>
+      <div class="field"><label>Ceritakan Kebutuhan</label><textarea rows="3" placeholder="Contoh: website untuk toko kopi dengan menu digital & booking meja..."></textarea></div>
+      <button class="btn btn-grad" style="width:100%;justify-content:center" type="submit">Kirim &amp; Minta Penawaran</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div><b style="color:var(--text)">Wirasolution</b> — Jasa Pembuatan Website Modern (Tanpa Harness).</div>
+    <div>Versi: <a href="wirasolution-dengan-harness.html" style="color:#67e8f9">Dengan Harness</a> • Single HTML • <span id="year"></span></div>
+  </div>
+</footer>
+</div>
+
+<div class="float-cta" id="floatCta" title="Chat WhatsApp">✦</div>
+<div class="toast" id="toast">Pesan terkirim! Kami balas dalam 1x24 jam.</div>
+
+<script>
+// TANPA HARNESS — semua perintah jalan langsung, tidak ada validateCommand
+var termLinesOff = [
+  '<span class="dim">$</span> <span class="info">agent coding</span> (tanpa harness)',
+  '<span class="bad">✗</span> validateCommand: <span class="dim">tidak ada — perintah jalan langsung</span>',
+  '<span class="bad">✗</span> redactSecrets: <span class="dim">dead — api_key bocor ke log</span>',
+  '<span class="bad">✗</span> checkDiff: <span class="dim">dead — file tanpa test lolos</span>',
+  '<span class="bad">✗</span> system prompt: <span class="dim">tidak disiplin</span>',
+  '<span class="bad">✗</span> DONE — kualitas <b>42/100</b>, berisiko.'
+];
+var body = document.getElementById('termBody');
+termLinesOff.forEach(function(html, i){
+  var div = document.createElement('div');
+  div.className = 'term-line';
+  div.innerHTML = html;
+  body.appendChild(div);
+  setTimeout(function(){ div.classList.add('show'); }, 180 * (i+1));
+});
+
+var cmdInput = document.getElementById('cmdInput');
+var pgResult = document.getElementById('pgResult');
+function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function checkCmd(){
+  var cmd = cmdInput.value;
+  // Tanpa harness: langsung "dijalankan" — tidak ada blokir sama sekali
+  pgResult.className = 'pg-result show allowed';
+  pgResult.innerHTML = '<b>Tanpa Harness:</b> perintah <span class="mono">' + escapeHtml(cmd) + '</span> <b>DIJALANKAN</b> tanpa pemeriksaan. Ini persis risiko agent tanpa guardrail.';
+}
+document.getElementById('checkBtn').addEventListener('click', checkCmd);
+cmdInput.addEventListener('keydown', function(e){ if(e.key==='Enter') checkCmd(); });
+document.querySelectorAll('.chip').forEach(function(ch){
+  ch.addEventListener('click', function(){ cmdInput.value = ch.getAttribute('data-cmd'); checkCmd(); });
+});
+
+var io = new IntersectionObserver(function(entries){
+  entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('visible'); io.unobserve(en.target); } });
+}, {threshold:.12});
+document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+var cio = new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(!en.isIntersecting) return;
+    var el = en.target, to = +el.getAttribute('data-to'), start = null;
+    function tick(ts){
+      if(!start) start = ts;
+      var p = Math.min((ts - start) / 1400, 1);
+      el.textContent = Math.round(to * (1 - Math.pow(1-p, 3)));
+      if(p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+    cio.unobserve(el);
+  });
+}, {threshold:.5});
+document.querySelectorAll('.count').forEach(function(el){ cio.observe(el); });
+
+var clients = ['Kopi Nusantara','Klinik Sehat','Toko FashionKu','Rental Mobil Jaya','Catering Bu Tini','Bengkel Modern','Laundry Kiloan','Salon & Spa Ayu','Properti Griya','Kursus Bahasa'];
+var track = document.getElementById('marquee');
+var html = clients.map(function(c){ return '<span>✦ ' + c + '</span>'; }).join('');
+track.innerHTML = html + html;
+
+document.querySelectorAll('.faq-item').forEach(function(item){
+  item.querySelector('.faq-q').addEventListener('click', function(){
+    var open = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(function(i){ i.classList.remove('open'); });
+    if(!open) item.classList.add('open');
+  });
+});
+
+document.getElementById('contactForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3200);
+  this.reset();
+});
+document.getElementById('floatCta').addEventListener('click', function(){
+  document.getElementById('kontak').scrollIntoView({behavior:'smooth'});
+});
+document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
