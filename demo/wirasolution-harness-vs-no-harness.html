@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wirasolution — Jasa Pembuatan Website Modern | Uji Dengan vs Tanpa Harness</title>
+<meta name="description" content="Wirasolution jasa pembuatan website modern. Bandingkan langsung hasil dengan Massmith Coding Harness vs tanpa harness.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070b18; --bg2:#0b1128; --card:rgba(255,255,255,.06); --card2:rgba(255,255,255,.09);
+  --line:rgba(255,255,255,.12); --text:#f1f5ff; --muted:#a5b4d4; --muted2:#7c8db5;
+  --violet:#7c3aed; --cyan:#06b6d4; --pink:#ec4899; --lime:#a3e635; --amber:#fbbf24; --red:#fb7185;
+  --grad:linear-gradient(135deg,#7c3aed 0%,#06b6d4 55%,#a3e635 120%);
+  --radius:24px; --shadow:0 24px 60px rgba(0,0,0,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.6}
+h1,h2,h3,.display{font-family:'Space Grotesk','Inter',sans-serif;line-height:1.05;letter-spacing:-.02em}
+a{color:inherit;text-decoration:none}
+.mono{font-family:'JetBrains Mono',monospace}
+.bg-fx{position:fixed;inset:0;z-index:-2;overflow:hidden;background:radial-gradient(ellipse 80% 50% at 70% -10%,rgba(124,58,237,.35),transparent 60%),radial-gradient(ellipse 60% 40% at 10% 10%,rgba(6,182,212,.22),transparent 55%),linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%)}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;animation:float 14s ease-in-out infinite}
+.blob.b1{width:460px;height:460px;background:#7c3aed;top:-120px;right:-80px}
+.blob.b2{width:380px;height:380px;background:#06b6d4;top:35%;left:-140px;animation-delay:-6s}
+.blob.b3{width:320px;height:320px;background:#ec4899;bottom:-100px;right:22%;animation-delay:-3s;opacity:.35}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-30px) scale(1.08)}}
+.grid-overlay{position:fixed;inset:0;z-index:-1;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 30%,transparent 75%)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+/* NAV */
+nav{position:sticky;top:14px;z-index:50;margin-top:14px}
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 16px 12px 20px;border-radius:999px;background:rgba(10,15,35,.72);backdrop-filter:blur(16px);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk';font-weight:700;font-size:1.15rem}
+.logo-mark{width:36px;height:36px;border-radius:11px;background:var(--grad);display:grid;place-items:center;font-weight:900;box-shadow:0 8px 20px rgba(124,58,237,.5);animation:pulseGlow 3s ease-in-out infinite}
+@keyframes pulseGlow{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.logo span{color:var(--cyan)}
+.nav-links{display:flex;gap:24px;font-size:.92rem;color:var(--muted)}
+.nav-links a{transition:.2s}.nav-links a:hover{color:#fff;transform:translateY(-1px)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;font-weight:700;font-size:.95rem;border:1px solid transparent;cursor:pointer;transition:.25s;white-space:nowrap}
+.btn-grad{background:var(--grad);color:#fff;box-shadow:0 12px 30px rgba(124,58,237,.4)}
+.btn-grad:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 18px 40px rgba(6,182,212,.35)}
+.btn-ghost{background:rgba(255,255,255,.07);border-color:var(--line);color:var(--text)}
+.btn-ghost:hover{background:rgba(255,255,255,.12)}
+/* HERO */
+.hero{padding:72px 0 30px}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.3);color:#67e8f9;font-size:.82rem;font-weight:600}
+.badge i{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime);animation:blink 1.6s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:clamp(2.6rem,6vw,4.4rem);margin:20px 0 18px}
+.hero h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lead{color:var(--muted);font-size:1.12rem;max-width:560px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.stats{display:flex;gap:28px;margin-top:36px;flex-wrap:wrap}
+.stat b{font-family:'Space Grotesk';font-size:1.9rem;display:block}
+.stat span{color:var(--muted2);font-size:.85rem}
+/* TOGGLE HARNESS */
+.harness-panel{margin-top:38px;padding:22px;border-radius:var(--radius);background:rgba(255,255,255,.05);border:1px solid var(--line);backdrop-filter:blur(12px)}
+.harness-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.harness-top h3{font-size:1.05rem}
+.harness-top p{color:var(--muted);font-size:.9rem;margin-top:4px}
+.switch{display:flex;align-items:center;gap:12px}
+.switch-track{width:72px;height:38px;border-radius:999px;background:#1e293b;border:1px solid var(--line);position:relative;cursor:pointer;transition:.3s;flex-shrink:0}
+.switch-track::after{content:'';position:absolute;top:4px;left:4px;width:28px;height:28px;border-radius:50%;background:#fff;transition:.3s cubic-bezier(.34,1.56,.64,1)}
+body.harness-on .switch-track{background:var(--grad);box-shadow:0 0 24px rgba(124,58,237,.5)}
+body.harness-on .switch-track::after{left:38px}
+.switch-label{font-weight:700;font-size:.9rem}
+.switch-label.off{color:var(--muted2)} body.harness-off .switch-label.off{color:var(--amber)}
+.switch-label.on{color:var(--muted2)} body.harness-on .switch-label.on{color:var(--lime)}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+.compare-card{padding:18px;border-radius:18px;border:1px solid var(--line);background:rgba(0,0,0,.25);transition:.35s;position:relative;overflow:hidden}
+body.harness-on .card-with{border-color:rgba(163,230,53,.55);background:rgba(163,230,53,.07);transform:scale(1.015)}
+body.harness-on .card-without{opacity:.6;filter:saturate(.6)}
+body.harness-off .card-with{opacity:.6;filter:saturate(.6)}
+body.harness-off .card-without{border-color:rgba(251,113,133,.55);background:rgba(251,113,133,.07);transform:scale(1.015)}
+.compare-card h4{font-size:.95rem;margin-bottom:10px}
+.compare-card ul{list-style:none;font-size:.86rem;color:var(--muted)}
+.compare-card li{padding:5px 0;border-bottom:1px dashed rgba(255,255,255,.08);display:flex;justify-content:space-between;gap:8px}
+.compare-card li:last-child{border:0}
+.pill{font-size:.72rem;font-weight:800;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:rgba(163,230,53,.15);color:#bef264;border:1px solid rgba(163,230,53,.3)}
+.pill.no{background:rgba(251,113,133,.12);color:#fda4af;border:1px solid rgba(251,113,133,.3)}
+.pill.warn{background:rgba(251,191,36,.12);color:#fcd34d;border:1px solid rgba(251,191,36,.3)}
+.score-row{display:flex;align-items:center;gap:16px;margin-top:16px}
+.score-ring{width:86px;height:86px;flex-shrink:0}
+.score-ring circle{fill:none;stroke-width:8;stroke-linecap:round}
+.score-ring .bgc{stroke:rgba(255,255,255,.1)}
+.score-ring .fgc{stroke:url(#gradScore);stroke-dasharray:240;stroke-dashoffset:240;transition:stroke-dashoffset 1.2s cubic-bezier(.22,1,.36,1)}
+body.harness-on .score-ring .fgc{stroke-dashoffset:6}
+body.harness-off .score-ring .fgc{stroke-dashoffset:150}
+.score-txt b{font-family:'Space Grotesk';font-size:1.7rem}
+.score-txt p{color:var(--muted);font-size:.88rem}
+/* PREVIEW */
+.preview{border-radius:var(--radius);background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.03));border:1px solid var(--line);overflow:hidden;box-shadow:var(--shadow);position:relative;transform-style:preserve-3d;transition:transform .3s}
+.preview-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.25)}
+.dot{width:11px;height:11px;border-radius:50%}.dot.r{background:#fb7185}.dot.y{background:#fbbf24}.dot.g{background:#a3e635}
+.preview-bar span{margin-left:8px;font-size:.8rem;color:var(--muted);background:rgba(255,255,255,.06);padding:4px 12px;border-radius:999px}
+.preview-body{padding:26px}
+.mini-hero h3{font-size:1.5rem;line-height:1.15}
+.mini-hero p{color:var(--muted);font-size:.9rem;margin:10px 0 16px}
+.mini-btns{display:flex;gap:8px}
+.mini-btn{padding:9px 16px;border-radius:999px;font-size:.82rem;font-weight:700;background:var(--grad);color:#fff}
+.mini-btn.ghost{background:rgba(255,255,255,.08);color:var(--text)}
+.mini-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.mini-card{padding:14px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.mini-card i{display:block;font-style:normal;font-size:1.2rem;margin-bottom:6px}
+.mini-card b{font-size:.82rem;display:block}
+.mini-card span{font-size:.74rem;color:var(--muted2)}
+.warn-overlay{position:absolute;inset:0;display:none;place-items:center;background:rgba(10,10,20,.55);backdrop-filter:blur(2px)}
+body.harness-off .warn-overlay{display:grid}
+.warn-box{background:#1a0f1e;border:1px solid rgba(251,113,133,.5);padding:18px 20px;border-radius:16px;max-width:300px;text-align:center;animation:shake .5s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.warn-box b{color:var(--red)}
+.warn-box p{font-size:.82rem;color:var(--muted);margin-top:6px}
+.harness-badge{position:absolute;top:14px;right:14px;padding:7px 13px;border-radius:999px;font-size:.75rem;font-weight:800;letter-spacing:.02em;z-index:2}
+body.harness-on .harness-badge{background:var(--lime);color:#111}
+body.harness-off .harness-badge{background:var(--red);color:#fff}
+.harness-badge::before{content:attr(data-txt)}
+/* TERMINAL */
+.terminal{margin-top:18px;border-radius:18px;background:#0a0f22;border:1px solid var(--line);overflow:hidden}
+.term-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.04)}
+.term-bar span{font-size:.78rem;color:var(--muted)}
+.term-body{padding:16px;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.8;min-height:150px}
+.term-line{opacity:0;transform:translateY(4px);transition:.4s}
+.term-line.show{opacity:1;transform:none}
+.term-line .ok{color:var(--lime)} .term-line .bad{color:var(--red)} .term-line .info{color:var(--cyan)} .term-line .dim{color:var(--muted2)}
+/* MARQUEE */
+.marquee{overflow:hidden;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:56px;background:rgba(255,255,255,.02)}
+.marquee-track{display:flex;gap:48px;width:max-content;animation:slide 26s linear infinite;font-family:'Space Grotesk';font-weight:600;color:var(--muted2);white-space:nowrap}
+@keyframes slide{to{transform:translateX(-50%)}}
+/* SECTIONS */
+section{padding:80px 0}
+.sec-head{max-width:680px;margin-bottom:44px}
+.sec-head h2{font-size:clamp(2rem,4.5vw,3rem);margin:14px 0 12px}
+.sec-head p{color:var(--muted)}
+.eyebrow{font-size:.8rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{padding:28px;border-radius:var(--radius);background:var(--card);border:1px solid var(--line);backdrop-filter:blur(10px);transition:.3s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;inset:0;background:radial-gradient(400px 200px at var(--mx,50%) var(--my,0%),rgba(124,58,237,.22),transparent 60%);opacity:0;transition:.3s}
+.card:hover{transform:translateY(-6px);border-color:rgba(124,58,237,.4)}
+.card:hover::before{opacity:1}
+.card .icon{width:52px;height:52px;border-radius:15px;background:var(--grad);display:grid;place-items:center;font-size:1.4rem;margin-bottom:16px;box-shadow:0 10px 24px rgba(124,58,237,.35)}
+.card h3{margin-bottom:8px;font-size:1.15rem}
+.card p{color:var(--muted);font-size:.93rem}
+.card .price{font-family:'Space Grotesk';font-size:1.6rem;margin-top:14px}
+.card .price small{font-size:.85rem;color:var(--muted)}
+.card.popular{border-color:rgba(124,58,237,.6);background:linear-gradient(160deg,rgba(124,58,237,.18),rgba(255,255,255,.03))}
+.pop-tag{position:absolute;top:18px;right:18px;background:var(--grad);padding:5px 12px;border-radius:999px;font-size:.72rem;font-weight:800}
+/* PROCESS */
+.process{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.step{padding:24px;border-radius:20px;background:var(--card);border:1px solid var(--line);position:relative}
+.step-num{width:44px;height:44px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-weight:900;margin-bottom:14px}
+.step h3{font-size:1rem;margin-bottom:6px}
+.step p{font-size:.87rem;color:var(--muted)}
+.step .tag{margin-top:12px;display:inline-block;font-size:.72rem;padding:4px 10px;border-radius:999px;background:rgba(163,230,53,.12);color:#bef264;border:1px solid rgba(163,230,53,.25)}
+/* PLAYGROUND */
+.playground{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch}
+.pg-box{padding:26px;border-radius:var(--radius);background:var(--card);border:1px solid var(--line)}
+.pg-box h3{margin-bottom:10px}
+.pg-box p{color:var(--muted);font-size:.92rem}
+.pg-input{display:flex;gap:10px;margin-top:16px}
+.pg-input input{flex:1;padding:13px 16px;border-radius:14px;background:rgba(0,0,0,.35);border:1px solid var(--line);color:#fff;font-family:'JetBrains Mono';font-size:.9rem;outline:none}
+.pg-input input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(6,182,212,.2)}
+.pg-result{margin-top:16px;padding:16px;border-radius:14px;font-size:.9rem;display:none}
+.pg-result.show{display:block;animation:pop .35s}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+.pg-result.blocked{background:rgba(251,113,133,.12);border:1px solid rgba(251,113,133,.4);color:#fecdd3}
+.pg-result.allowed{background:rgba(163,230,53,.1);border:1px solid rgba(163,230,53,.35);color:#d9f99d}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line);font-size:.8rem;cursor:pointer;transition:.2s}
+.chip:hover{background:rgba(124,58,237,.25);border-color:rgba(124,58,237,.5)}
+/* PORTFOLIO */
+.porto{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.porto-card{border-radius:20px;overflow:hidden;border:1px solid var(--line);background:var(--card);transition:.3s}
+.porto-card:hover{transform:translateY(-6px) rotate(-.5deg)}
+.porto-img{height:160px;position:relative;display:grid;place-items:center}
+.porto-img span{font-family:'Space Grotesk';font-weight:700;font-size:1.1rem;background:rgba(0,0,0,.35);padding:8px 16px;border-radius:999px;backdrop-filter:blur(6px)}
+.porto-body{padding:18px}
+.porto-body b{display:block;margin-bottom:4px}
+.porto-body span{font-size:.85rem;color:var(--muted)}
+/* FAQ + FORM */
+.faq{max-width:820px;margin:0 auto}
+.faq-item{border:1px solid var(--line);border-radius:16px;margin-bottom:12px;background:var(--card);overflow:hidden}
+.faq-q{width:100%;text-align:left;padding:18px 20px;background:none;border:0;color:var(--text);font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:1rem}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease;padding:0 20px;color:var(--muted);font-size:.93rem}
+.faq-item.open .faq-a{max-height:200px;padding-bottom:18px}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-q::after{content:'+';font-size:1.4rem;color:var(--cyan);transition:.3s}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.85rem;font-weight:600;margin-bottom:6px;color:var(--muted)}
+.field input,.field select,.field textarea{width:100%;padding:13px 16px;border-radius:14px;background:rgba(0,0,0,.3);border:1px solid var(--line);color:#fff;outline:none;font-family:inherit}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--cyan)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,80px);background:#111827;border:1px solid rgba(163,230,53,.4);color:#ecfccb;padding:14px 22px;border-radius:999px;font-weight:600;z-index:100;transition:.4s;box-shadow:var(--shadow)}
+.toast.show{transform:translate(-50%,0)}
+footer{padding:40px 0;border-top:1px solid var(--line);color:var(--muted2);font-size:.88rem}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+.float-cta{position:fixed;right:20px;bottom:20px;z-index:60;width:58px;height:58px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:1.4rem;box-shadow:0 14px 34px rgba(124,58,237,.5);animation:float 4s ease-in-out infinite;cursor:pointer}
+@media(max-width:900px){
+  .hero-grid,.playground,.contact-grid{grid-template-columns:1fr}
+  .cards,.porto{grid-template-columns:1fr 1fr}
+  .process{grid-template-columns:1fr 1fr}
+  .nav-links{display:none}
+  .compare{grid-template-columns:1fr}
+}
+@media(max-width:560px){.cards,.porto,.process{grid-template-columns:1fr}.stats{gap:18px}}
+</style>
+</head>
+<body class="harness-on">
+<div class="bg-fx"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="grid-overlay"></div>
+
+<div class="wrap">
+<nav><div class="nav-in">
+  <div class="logo"><div class="logo-mark">W</div>Wira<span>solution</span></div>
+  <div class="nav-links">
+    <a href="#layanan">Layanan</a><a href="#proses">Proses</a><a href="#uji">Uji Harness</a><a href="#portofolio">Portofolio</a><a href="#harga">Harga</a><a href="#kontak">Kontak</a>
+  </div>
+  <a href="#kontak" class="btn btn-grad">Konsultasi Gratis</a>
+</div></nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-grid">
+    <div>
+      <span class="badge"><i></i> Jasa Pembuatan Website Modern &amp; Cepat</span>
+      <h1>Website Keren<br>untuk Bisnis <em>Naik Kelas.</em></h1>
+      <p class="lead">Wirasolution bantu UMKM, company profile, toko online, sampai web aplikasi — desain modern, animasi halus, loading cepat, dan aman. Scroll untuk lihat bedanya: <b style="color:#fff">dengan Massmith Harness</b> vs <b style="color:#fff">tanpa harness</b>.</p>
+      <div class="cta-row">
+        <a href="#uji" class="btn btn-grad">Uji Harness Live</a>
+        <a href="#harga" class="btn btn-ghost">Lihat Harga</a>
+      </div>
+      <div class="stats">
+        <div class="stat"><b><span class="count" data-to="120">0</span>+</b><span>Proyek Website</span></div>
+        <div class="stat"><b><span class="count" data-to="98">0</span>%</b><span>Klien Puas</span></div>
+        <div class="stat"><b><span class="count" data-to="7">0</span> hari</b><span>Rata-rata Selesai</span></div>
+      </div>
+
+      <!-- HARNESS TOGGLE -->
+      <div class="harness-panel" id="harnessPanel">
+        <div class="harness-top">
+          <div>
+            <h3>Mode Perbandingan Harness</h3>
+            <p>Aktifkan / nonaktifkan Massmith Coding Harness dan lihat dampaknya secara real-time.</p>
+          </div>
+          <div class="switch" role="switch" aria-checked="true" id="harnessSwitch" tabindex="0">
+            <span class="switch-label off">Tanpa Harness</span>
+            <div class="switch-track"></div>
+            <span class="switch-label on">Dengan Harness</span>
+          </div>
+        </div>
+        <div class="compare">
+          <div class="compare-card card-with">
+            <h4>Dengan Massmith Harness</h4>
+            <ul>
+              <li><span>Dangerous-command guard</span><span class="pill ok">Aktif</span></li>
+              <li><span>Secret redaction</span><span class="pill ok">Aktif</span></li>
+              <li><span>Diff check + test warning</span><span class="pill ok">Aktif</span></li>
+              <li><span>System prompt disiplin</span><span class="pill ok">Aktif</span></li>
+              <li><span>Review /review</span><span class="pill ok">Aktif</span></li>
+            </ul>
+          </div>
+          <div class="compare-card card-without">
+            <h4>Tanpa Harness</h4>
+            <ul>
+              <li><span>Dangerous-command guard</span><span class="pill no">Mati</span></li>
+              <li><span>Secret redaction</span><span class="pill no">Mati</span></li>
+              <li><span>Diff check + test warning</span><span class="pill no">Mati</span></li>
+              <li><span>System prompt disiplin</span><span class="pill warn">Acak</span></li>
+              <li><span>Review /review</span><span class="pill no">Tidak ada</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="score-row">
+          <svg class="score-ring" viewBox="0 0 100 100">
+            <defs><linearGradient id="gradScore" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient></defs>
+            <circle class="bgc" cx="50" cy="50" r="42"></circle>
+            <circle class="fgc" cx="50" cy="50" r="42" transform="rotate(-90 50 50)"></circle>
+          </svg>
+          <div class="score-txt">
+            <b id="scoreNum">98/100</b>
+            <p id="scoreDesc">Kualitas coding aman, ter-review, dan siap deploy. Semua guardrail hijau.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="preview" id="previewCard">
+        <div class="harness-badge" data-txt="HARNESS AKTIF"></div>
+        <div class="preview-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>wirasolution.id</span></div>
+        <div class="preview-body">
+          <div class="mini-hero">
+            <span class="eyebrow">Jasa Pembuatan Website</span>
+            <h3>Desain Modern,<br>Animasi Halus.</h3>
+            <p>Company profile, landing page, e-commerce — dikerjakan cepat dengan standar kualitas harness.</p>
+            <div class="mini-btns"><span class="mini-btn">Mulai Proyek</span><span class="mini-btn ghost">Lihat Portofolio</span></div>
+          </div>
+          <div class="mini-cards">
+            <div class="mini-card"><i>◆</i><b>Landing Page</b><span>Konversi tinggi</span></div>
+            <div class="mini-card"><i>◆</i><b>E-Commerce</b><span>Siap jualan</span></div>
+            <div class="mini-card"><i>◆</i><b>Web App</b><span>Custom fitur</span></div>
+          </div>
+        </div>
+        <div class="warn-overlay"><div class="warn-box"><b>Tanpa Harness — Risiko!</b><p>Tidak ada guard untuk perintah berbahaya, secret bisa bocor ke log, dan tidak ada peringatan test hilang.</p></div></div>
+      </div>
+
+      <div class="terminal">
+        <div class="term-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div><span>massmith — harness check</span></div>
+        <div class="term-body" id="termBody"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="marquee"><div class="marquee-track" id="marquee"></div></div>
+
+<!-- LAYANAN -->
+<section id="layanan">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Layanan Kami</span>
+    <h2>Semua Kebutuhan Website, Satu Atap.</h2>
+    <p>Dari landing page satu halaman sampai web aplikasi kompleks — semua dikerjakan dengan workflow harness: diff kecil, review, test.</p>
+  </div>
+  <div class="cards">
+    <div class="card reveal"><div class="icon">◆</div><h3>Landing Page</h3><p>Halaman promosi super cepat untuk iklan &amp; campaign. Animasi scroll, CTA jelas, konversi maksimal.</p><div class="price">Mulai Rp 1,5jt</div></div>
+    <div class="card reveal"><div class="icon">◆</div><h3>Company Profile</h3><p>Website perusahaan profesional dengan halaman layanan, portofolio, dan kontak terintegrasi WhatsApp.</p><div class="price">Mulai Rp 3,5jt</div></div>
+    <div class="card reveal popular"><span class="pop-tag">Paling Laris</span><div class="icon">◆</div><h3>E-Commerce / Toko Online</h3><p>Katalog produk, keranjang, pembayaran, dan dashboard admin. Siap jualan 24/7.</p><div class="price">Mulai Rp 7,5jt</div></div>
+    <div class="card reveal"><div class="icon">◆</div><h3>Web Aplikasi Custom</h3><p>Dashboard, sistem booking, CRM, atau aplikasi internal sesuai alur bisnis Anda.</p><div class="price">Hubungi Kami</div></div>
+    <div class="card reveal"><div class="icon">◆</div><h3>SEO &amp; Kecepatan</h3><p>Optimasi Core Web Vitals, meta tag, dan struktur agar mudah ditemukan di Google.</p><div class="price">Termasuk Paket</div></div>
+    <div class="card reveal"><div class="icon">◆</div><h3>Maintenance &amp; Support</h3><p>Backup, update keamanan, dan revisi ringan bulanan. Website Anda selalu sehat.</p><div class="price">Mulai Rp 500rb/bln</div></div>
+  </div>
+</section>
+
+<!-- PROSES -->
+<section id="proses" style="padding-top:20px">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Cara Kerja</span>
+    <h2>Proses Jelas, Tanpa Ribet.</h2>
+    <p>Setiap tahap dilewati dengan checklist harness — jadi hasil akhirnya aman dan teruji.</p>
+  </div>
+  <div class="process">
+    <div class="step reveal"><div class="step-num">1</div><h3>Brief &amp; Konsultasi</h3><p>Cerita kebutuhan bisnis Anda. Kami petakan halaman, fitur, dan target audiens.</p><span class="tag">Gratis</span></div>
+    <div class="step reveal"><div class="step-num">2</div><h3>Desain UI/UX</h3><p>Mockup modern dengan animasi prototype. Revisi sampai Anda yakin.</p><span class="tag">Revisi 2x</span></div>
+    <div class="step reveal"><div class="step-num">3</div><h3>Development + Harness Check</h3><p>Coding dengan guardrail: blok perintah berbahaya, redaksi secret, diff check otomatis.</p><span class="tag">Auto-check</span></div>
+    <div class="step reveal"><div class="step-num">4</div><h3>Test &amp; Launch</h3><p>QA, kecepatan, SEO dasar, lalu deploy. Domain &amp; hosting dibantu sampai online.</p><span class="tag">Siap Live</span></div>
+  </div>
+</section>
+
+<!-- PLAYGROUND -->
+<section id="uji" style="padding-top:20px">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Uji Harness Live</span>
+    <h2>Coba Guardrail-nya Langsung.</h2>
+    <p>Ini fungsi <span class="mono">validateCommand()</span> yang sama dengan core harness — jalan 100% di browser Anda. Ketik perintah berbahaya dan lihat diblokir, atau perintah aman dan lihat lolos.</p>
+  </div>
+  <div class="playground">
+    <div class="pg-box reveal">
+      <h3>Playground Guardrail</h3>
+      <p>Masukkan perintah shell. Mode harness <b id="pgMode" style="color:var(--lime)">AKTIF</b> — sinkron dengan toggle di atas.</p>
+      <div class="pg-input">
+        <input id="cmdInput" class="mono" placeholder="misal: git commit --no-verify" value="git commit -m &quot;fix&quot; --no-verify">
+        <button class="btn btn-grad" id="checkBtn">Cek</button>
+      </div>
+      <div class="pg-result" id="pgResult"></div>
+      <div class="chips">
+        <span class="chip" data-cmd="git commit -m fix --no-verify">--no-verify</span>
+        <span class="chip" data-cmd="rm -rf /">rm -rf /</span>
+        <span class="chip" data-cmd="git push --force origin main">push --force</span>
+        <span class="chip" data-cmd="ls -la">ls -la</span>
+        <span class="chip" data-cmd="npm run test">npm run test</span>
+      </div>
+    </div>
+    <div class="pg-box reveal">
+      <h3>Kenapa Pakai Harness?</h3>
+      <p>Tanpa harness, agent coding bisa jalanin perintah merusak tanpa rem. Dengan Massmith, setiap perintah dicek dulu:</p>
+      <ul style="margin:16px 0 0 18px;color:var(--muted);font-size:.92rem;line-height:2">
+        <li>Blok <span class="mono">--no-verify</span>, <span class="mono">rm -rf /</span>, <span class="mono">drop table</span>, <span class="mono">git push --force</span></li>
+        <li>Redaksi <span class="mono">api_key</span>, <span class="mono">Bearer token</span>, private key otomatis</li>
+        <li>Peringatan kalau file berubah tanpa file test pendamping</li>
+        <li>System prompt: diff kecil, reviewable, wajib test/typecheck/lint</li>
+      </ul>
+      <a href="#kontak" class="btn btn-grad" style="margin-top:18px">Minta Website Dibuatkan</a>
+    </div>
+  </div>
+</section>
+
+<!-- PORTOFOLIO -->
+<section id="portofolio" style="padding-top:20px">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Portofolio</span>
+    <h2>Contoh Hasil Kerja Kami.</h2>
+    <p>Semua proyek di bawah dibuat dengan workflow harness — teruji, aman, dan cepat.</p>
+  </div>
+  <div class="porto">
+    <div class="porto-card reveal"><div class="porto-img" style="background:linear-gradient(135deg,#7c3aed,#06b6d4)"><span>Kopi Nusantara</span></div><div class="porto-body"><b>Landing Page Kedai Kopi</b><span>Konversi naik 3,2x • Animasi scroll &amp; menu digital</span></div></div>
+    <div class="porto-card reveal"><div class="porto-img" style="background:linear-gradient(135deg,#06b6d4,#a3e635)"><span>Klinik Sehat</span></div><div class="porto-body"><b>Company Profile Klinik</b><span>Booking online • 120+ pasien/bulan</span></div></div>
+    <div class="porto-card reveal"><div class="porto-img" style="background:linear-gradient(135deg,#ec4899,#fbbf24)"><span>Toko FashionKu</span></div><div class="porto-body"><b>E-Commerce Fashion</b><span>Checkout 1 klik • Penjualan 24/7</span></div></div>
+  </div>
+</section>
+
+<!-- HARGA -->
+<section id="harga" style="padding-top:20px">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Harga Transparan</span>
+    <h2>Pilih Paket Sesuai Bisnis Anda.</h2>
+    <p>Tanpa biaya tersembunyi. Semua paket termasuk desain responsif, SEO dasar, dan garansi revisi.</p>
+  </div>
+  <div class="cards">
+    <div class="card reveal"><h3>Starter</h3><p>Landing page 1 halaman untuk promosi cepat.</p><div class="price">Rp 1,5jt <small>/ proyek</small></div><p style="margin-top:12px;font-size:.88rem">✓ 1 Halaman &nbsp;✓ Animasi dasar<br>✓ Form kontak &nbsp;✓ SEO dasar<br>✓ Revisi 1x</p><a href="#kontak" class="btn btn-ghost" style="margin-top:18px;width:100%;justify-content:center">Pilih Starter</a></div>
+    <div class="card popular reveal"><span class="pop-tag">Paling Laris</span><h3>Bisnis</h3><p>Company profile multi-halaman yang profesional.</p><div class="price">Rp 3,5jt <small>/ proyek</small></div><p style="margin-top:12px;font-size:.88rem">✓ 5 Halaman &nbsp;✓ Animasi premium<br>✓ Portofolio &amp; galeri &nbsp;✓ WhatsApp CTA<br>✓ Revisi 2x &nbsp;✓ Garansi 30 hari</p><a href="#kontak" class="btn btn-grad" style="margin-top:18px;width:100%;justify-content:center">Pilih Bisnis</a></div>
+    <div class="card reveal"><h3>E-Commerce</h3><p>Toko online lengkap dengan pembayaran.</p><div class="price">Rp 7,5jt <small>/ proyek</small></div><p style="margin-top:12px;font-size:.88rem">✓ Produk &amp; keranjang &nbsp;✓ Payment gateway<br>✓ Dashboard admin &nbsp;✓ Training 1 sesi<br>✓ Support 3 bulan</p><a href="#kontak" class="btn btn-ghost" style="margin-top:18px;width:100%;justify-content:center">Pilih E-Commerce</a></div>
+  </div>
+</section>
+
+<!-- FAQ + KONTAK -->
+<section id="kontak" style="padding-top:20px">
+  <div class="sec-head reveal" style="text-align:center;margin-left:auto;margin-right:auto">
+    <span class="eyebrow">Tanya Jawab</span>
+    <h2>Sering Ditanyakan.</h2>
+  </div>
+  <div class="faq">
+    <div class="faq-item reveal"><button class="faq-q">Berapa lama pembuatan website?</button><div class="faq-a">Landing page 3–5 hari, company profile 5–7 hari, e-commerce 7–14 hari tergantung revisi dan konten yang disiapkan.</div></div>
+    <div class="faq-item reveal"><button class="faq-q">Apakah domain &amp; hosting termasuk?</button><div class="faq-a">Paket Bisnis ke atas kami bantu daftarkan domain .com dan hosting. Biaya domain/hosting dibayar terpisah sesuai tagihan provider, kami bantu setup-nya.</div></div>
+    <div class="faq-item reveal"><button class="faq-q">Apa itu Massmith Harness dan kenapa penting?</button><div class="faq-a">Harness adalah guardrail coding: blok perintah berbahaya, redaksi secret, dan peringatan test hilang. Website yang dibuat dengan harness poinnya 98/100 — aman, ter-review, dan siap deploy. Tanpa harness, risiko bug dan kebocoran lebih tinggi.</div></div>
+    <div class="faq-item reveal"><button class="faq-q">Bisakah revisi setelah selesai?</button><div class="faq-a">Bisa. Semua paket termasuk revisi minor. Paket Bisnis dan E-Commerce juga ada garansi 30 hari untuk perbaikan bug.</div></div>
+  </div>
+
+  <div class="contact-grid" style="margin-top:36px">
+    <div class="pg-box reveal">
+      <h3>Minta Penawaran Gratis</h3>
+      <p>Ceritakan kebutuhan website Anda — kami balas dengan estimasi &amp; timeline dalam 1x24 jam.</p>
+      <div style="margin-top:18px;font-size:.92rem;color:var(--muted);line-height:2.2">
+        <div>Email: halo@wirasolution.id</div>
+        <div>WhatsApp: +62 812-3456-7890</div>
+        <div>Jam: Senin–Sabtu, 09.00–18.00 WIB</div>
+      </div>
+    </div>
+    <form class="pg-box reveal" id="contactForm">
+      <div class="field"><label>Nama Anda</label><input required placeholder="Nama lengkap"></div>
+      <div class="field"><label>Email / WhatsApp</label><input required placeholder="email@contoh.com"></div>
+      <div class="field"><label>Jenis Website</label><select><option>Landing Page</option><option>Company Profile</option><option>E-Commerce</option><option>Web Aplikasi Custom</option></select></div>
+      <div class="field"><label>Ceritakan Kebutuhan</label><textarea rows="3" placeholder="Contoh: website untuk toko kopi dengan menu digital & booking meja..."></textarea></div>
+      <button class="btn btn-grad" style="width:100%;justify-content:center" type="submit">Kirim &amp; Minta Penawaran</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div><b style="color:var(--text)">Wirasolution</b> — Jasa Pembuatan Website Modern.</div>
+    <div>Demo interaktif: Dengan vs Tanpa Massmith Coding Harness • Single HTML • <span id="year"></span></div>
+  </div>
+</footer>
+</div>
+
+<div class="float-cta" id="floatCta" title="Chat WhatsApp">✦</div>
+<div class="toast" id="toast">Pesan terkirim! Kami balas dalam 1x24 jam.</div>
+
+<script>
+var harnessOn = true;
+var DANGER = ['--no-verify','rm -rf /','rm -rf $HOME','drop table','drop database','delete from','mkfs','> /dev/sda','git push --force','git reset --hard'];
+function isDangerousCommand(cmd){
+  var n = cmd.toLowerCase().replace(/\s+/g,' ').trim();
+  return DANGER.some(function(p){ return n.indexOf(p.toLowerCase()) !== -1 || n.indexOf(p.toLowerCase()) === 0; });
+}
+function validateCommand(cmd, strict){
+  if(!cmd.trim()) return {blocked:true, reason:'empty command'};
+  if(isDangerousCommand(cmd)){
+    if(!strict) return {blocked:false, reason:'dangerous pattern detected but strict mode is off'};
+    if(cmd.indexOf('--no-verify') !== -1) return {blocked:true, reason:'strict mode forbids --no-verify'};
+    return {blocked:true, reason:'dangerous command blocked: ' + cmd};
+  }
+  return {blocked:false};
+}
+function redactSecrets(t){
+  return t.replace(/(api[_-]?key\s*[:=]\s*["']?)([A-Za-z0-9._\-]{16,})(["']?)/gi,'$1[REDACTED]$3')
+          .replace(/(authorization:\s*bearer\s+)([A-Za-z0-9._\-]{16,})/gi,'$1[REDACTED]');
+}
+
+// Toggle
+var sw = document.getElementById('harnessSwitch');
+function setHarness(on){
+  harnessOn = on;
+  document.body.classList.toggle('harness-on', on);
+  document.body.classList.toggle('harness-off', !on);
+  sw.setAttribute('aria-checked', on ? 'true' : 'false');
+  document.getElementById('scoreNum').textContent = on ? '98/100' : '42/100';
+  document.getElementById('scoreDesc').textContent = on
+    ? 'Kualitas coding aman, ter-review, dan siap deploy. Semua guardrail hijau.'
+    : 'Tanpa guardrail: risiko perintah berbahaya, secret bocor, dan tidak ada peringatan test hilang.';
+  document.querySelector('.harness-badge').setAttribute('data-txt', on ? 'HARNESS AKTIF' : 'TANPA HARNESS');
+  document.getElementById('pgMode').textContent = on ? 'AKTIF' : 'MATI';
+  document.getElementById('pgMode').style.color = on ? 'var(--lime)' : 'var(--amber)';
+  runTerminal(on);
+}
+sw.addEventListener('click', function(){ setHarness(!harnessOn); });
+sw.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); setHarness(!harnessOn); } });
+
+// Terminal
+var termLinesOn = [
+  '<span class="dim">$</span> <span class="info">massmith check</span> --strict --verbose',
+  '<span class="ok">✓</span> validateCommand: <span class="dim">git commit --no-verify → BLOCKED</span>',
+  '<span class="ok">✓</span> redactSecrets: <span class="dim">api_key=abcd... → [REDACTED]</span>',
+  '<span class="ok">✓</span> checkDiff: <span class="dim">3 files, 1 warning (test hilang)</span>',
+  '<span class="ok">✓</span> system prompt: <span class="dim">diff kecil, wajib test/lint</span>',
+  '<span class="ok">✓</span> DONE — kualitas <b>98/100</b>, siap deploy.'
+];
+var termLinesOff = [
+  '<span class="dim">$</span> <span class="info">agent coding</span> (tanpa harness)',
+  '<span class="bad">✗</span> validateCommand: <span class="dim">tidak ada — perintah jalan langsung</span>',
+  '<span class="bad">✗</span> redactSecrets: <span class="dim">dead — api_key bocor ke log</span>',
+  '<span class="bad">✗</span> checkDiff: <span class="dim">dead — file tanpa test lolos</span>',
+  '<span class="bad">✗</span> system prompt: <span class="dim">tidak disiplin</span>',
+  '<span class="bad">✗</span> DONE — kualitas <b>42/100</b>, berisiko.'
+];
+function runTerminal(on){
+  var body = document.getElementById('termBody');
+  body.innerHTML = '';
+  var lines = on ? termLinesOn : termLinesOff;
+  lines.forEach(function(html, i){
+    var div = document.createElement('div');
+    div.className = 'term-line';
+    div.innerHTML = html;
+    body.appendChild(div);
+    setTimeout(function(){ div.classList.add('show'); }, 180 * (i+1));
+  });
+}
+runTerminal(true);
+
+// Playground
+var cmdInput = document.getElementById('cmdInput');
+var pgResult = document.getElementById('pgResult');
+function checkCmd(){
+  var cmd = cmdInput.value;
+  var res = validateCommand(cmd, harnessOn);
+  pgResult.className = 'pg-result show ' + (res.blocked ? 'blocked' : 'allowed');
+  if(!harnessOn){
+    pgResult.innerHTML = '<b>Tanpa Harness:</b> perintah <span class="mono">' + escapeHtml(cmd) + '</span> <b>DIJALANKAN</b> tanpa pemeriksaan. ' + (res.reason || '');
+  } else if(res.blocked){
+    pgResult.innerHTML = '<b>Diblokir oleh Harness:</b> ' + escapeHtml(res.reason || 'dangerous command');
+  } else {
+    pgResult.innerHTML = '<b>Aman:</b> perintah <span class="mono">' + escapeHtml(cmd) + '</span> lolos guardrail. Tidak ada pola berbahaya terdeteksi.';
+  }
+}
+function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+document.getElementById('checkBtn').addEventListener('click', checkCmd);
+cmdInput.addEventListener('keydown', function(e){ if(e.key==='Enter') checkCmd(); });
+document.querySelectorAll('.chip').forEach(function(ch){
+  ch.addEventListener('click', function(){ cmdInput.value = ch.getAttribute('data-cmd'); checkCmd(); });
+});
+
+// Reveal on scroll
+var io = new IntersectionObserver(function(entries){
+  entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('visible'); io.unobserve(en.target); } });
+}, {threshold:.12});
+document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+// Counter
+var cio = new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(!en.isIntersecting) return;
+    var el = en.target, to = +el.getAttribute('data-to'), start = null;
+    function tick(ts){
+      if(!start) start = ts;
+      var p = Math.min((ts - start) / 1400, 1);
+      el.textContent = Math.round(to * (1 - Math.pow(1-p, 3)));
+      if(p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+    cio.unobserve(el);
+  });
+}, {threshold:.5});
+document.querySelectorAll('.count').forEach(function(el){ cio.observe(el); });
+
+// Card spotlight follow mouse
+document.querySelectorAll('.card').forEach(function(card){
+  card.addEventListener('mousemove', function(e){
+    var r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+    card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+  });
+});
+
+// Marquee
+var clients = ['Kopi Nusantara','Klinik Sehat','Toko FashionKu','Rental Mobil Jaya','Catering Bu Tini','Bengkel Modern','Laundry Kiloan','Salon & Spa Ayu','Properti Griya','Kursus Bahasa'];
+var track = document.getElementById('marquee');
+var html = clients.map(function(c){ return '<span>✦ ' + c + '</span>'; }).join('');
+track.innerHTML = html + html;
+
+// FAQ
+document.querySelectorAll('.faq-item').forEach(function(item){
+  item.querySelector('.faq-q').addEventListener('click', function(){
+    var open = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(function(i){ i.classList.remove('open'); });
+    if(!open) item.classList.add('open');
+  });
+});
+
+// Form
+document.getElementById('contactForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3200);
+  this.reset();
+});
+document.getElementById('floatCta').addEventListener('click', function(){
+  document.getElementById('kontak').scrollIntoView({behavior:'smooth'});
+});
+document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
