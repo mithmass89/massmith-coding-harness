@@ -1,9 +1,3 @@
-export interface ToolResult {
-	ok: boolean;
-	text: string;
-	code?: number;
-}
-
 export interface DiffCheckOptions {
 	allowNoVerify?: boolean;
 	maxDiffLines?: number;
@@ -103,8 +97,11 @@ export function checkDiff(files: string[], options: DiffCheckOptions = {}): Diff
 			warnings.push(`no test file found alongside ${file} (consider ${testFile})`);
 		}
 	}
-	if (options.allowNoVerify === false && warnings.length === 0) {
-		// strict diff check hook point
+	if (options.allowNoVerify === false) {
+		warnings.push('strict mode: --no-verify is forbidden');
+	}
+	if (options.runTests === true) {
+		warnings.push('runTests requested: run pnpm test before push');
 	}
 	return {
 		ok: true,

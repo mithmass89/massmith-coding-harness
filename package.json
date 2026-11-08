@@ -24,9 +24,6 @@
 	"engines": {
 		"node": "^22.19.0 || >=24.0.0"
 	},
-	"workspaces": [
-		"packages/*"
-	],
 	"scripts": {
 		"test": "node --import tsx packages/core/src/__tests__/core.test.ts",
 		"verify:commandcode": "node --import tsx packages/commandcode/index.ts",
