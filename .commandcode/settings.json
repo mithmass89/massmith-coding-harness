@@ -1,8 +1,0 @@
-{
-	"mods": {
-		"sources": [
-			{ "source": "./packages/commandcode" }
-		],
-		"disabled": []
-	}
-}

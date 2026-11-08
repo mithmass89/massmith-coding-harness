@@ -10,5 +10,8 @@
 	},
 	"dsh": {
 		"bundle": "./cordis.patch.yml"
+	},
+	"peerDependencies": {
+		"@deepseek-ai/cordis": "latest"
 	}
 }

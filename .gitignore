@@ -50,6 +50,12 @@ dist/
 .idea/
 .vscode/settings.json
 
+# Command Code local state (taste, history, projects, auth)
+.commandcode/
+
+# opencode local state (should be kept in home dir)
+.opencode/
+
 # OS
 .DS_Store
 Thumbs.db

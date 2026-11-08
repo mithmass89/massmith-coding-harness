@@ -1,3 +1,4 @@
+import type { Context } from '@deepseek-ai/cordis';
 import {
 	checkDiff,
 	composeSystemPrompt,
@@ -6,12 +7,47 @@ import {
 	validateCommand
 } from '../../core/src/index.ts';
 
-export default function massmithPlugin(ctx: any) {
-	const strict = ctx.config?.strict !== false;
+declare module '@deepseek-ai/cordis' {
+	interface Context {
+		tools: {
+			register: (tool: unknown) => void | (() => void);
+		};
+		commands: {
+			register: (cmd: unknown) => void | (() => void);
+		};
+		effect: (fn: () => void | (() => void), id?: string) => void;
+		on: (
+			event: string,
+			handler: (event: any, next?: any) => any
+		) => void | (() => void);
+	}
+}
 
-	// Tool: diff_check
-	ctx.effect(() => {
-		ctx.tools.register({
+export const inject = ['tools', 'commands'];
+
+interface MassmithConfig {
+	strict?: boolean;
+	verbose?: boolean;
+	maxDiffLines?: number;
+}
+
+function parseConfig(raw: unknown): Required<MassmithConfig> {
+	const cfg = (raw ?? {}) as MassmithConfig;
+	return {
+		strict: cfg.strict !== false,
+		verbose: cfg.verbose === true,
+		maxDiffLines:
+			typeof cfg.maxDiffLines === 'number' && cfg.maxDiffLines > 0 ? cfg.maxDiffLines : 400
+	};
+}
+
+export default function massmithPlugin(ctx: Context & { config?: unknown }) {
+	const config = parseConfig(ctx.config);
+	const disposers: Array<() => void> = [];
+
+	return () => {
+		// Tool: diff_check — reversible via disposer returned from register
+		const unregisterTool = ctx.tools.register({
 			name: 'massmith_diff_check',
 			description: 'Check changed files for missing tests and diff size',
 			schema: {
@@ -23,7 +59,9 @@ export default function massmithPlugin(ctx: any) {
 			},
 			async run(args: any) {
 				const files = Array.isArray(args?.files) ? args.files.filter(Boolean) : [];
-				const result = checkDiff(files, { maxDiffLines: args?.maxDiffLines ?? 400 });
+				const result = checkDiff(files, {
+					maxDiffLines: args?.maxDiffLines ?? config.maxDiffLines
+				});
 				const lines = [
 					result.summary,
 					`tracked: ${result.trackedFiles}, hasTests: ${result.hasTests}`,
@@ -32,49 +70,10 @@ export default function massmithPlugin(ctx: any) {
 				return lines.join('\n');
 			}
 		});
-	}, 'massmith-diff-check-tool');
+		if (typeof unregisterTool === 'function') disposers.push(unregisterTool as () => void);
 
-	// Tool guard: block dangerous shell
-	ctx.on('tools/pre-execute', async (event: any, next: any) => {
-		const command = event?.input?.command ?? event?.call?.input?.command ?? '';
-		if (command && typeof command === 'string') {
-			const check = validateCommand(command, { strict });
-			if (check.blocked) {
-				return { reject: check.reason ?? 'dangerous command blocked' };
-			}
-		}
-		return next();
-	});
-
-	// System prompt injection
-	ctx.on('agent/pre-step', async (event: any, next: any) => {
-		if (event && typeof event === 'object') {
-			event.systemMessages = [
-				...(event.systemMessages ?? []),
-				{ type: 'text', text: composeSystemPrompt() }
-			];
-		}
-		return next();
-	});
-
-	// Redact secrets from tool output
-	ctx.on('tools/post-execute', async (event: any) => {
-		const result = event?.result ?? event?.output ?? '';
-		if (typeof result === 'string' && result) {
-			const redacted = redactSecrets(result);
-			if (redacted !== result) {
-				event.result = redacted;
-				event.output = redacted;
-			}
-			if (result.includes('DEPRECATED')) {
-				event.additionalContext = 'DEPRECATED flagged';
-			}
-		}
-	});
-
-	// Command: /review equivalent via ctx.commands
-	ctx.effect(() => {
-		ctx.commands?.register?.({
+		// Command: /review
+		const unregisterCommand = ctx.commands.register({
 			name: 'review',
 			description: 'Review git changes for safety and test coverage',
 			async run(args: any) {
@@ -89,14 +88,78 @@ export default function massmithPlugin(ctx: any) {
 				};
 			}
 		});
-	}, 'massmith-review-command');
-
-	// Observe turn end
-	ctx.on('turn/end', () => {
-		try {
-			ctx.telemetry?.event?.('massmith.turn_end', { ts: Date.now(), summary: summarizeTurn(0, false) });
-		} catch {
-			// telemetry optional
+		if (typeof unregisterCommand === 'function') {
+			disposers.push(unregisterCommand as () => void);
 		}
-	});
+
+		// Tool guard: block dangerous shell — waterfall must call next() to continue
+		const offPre = ctx.on('tools/pre-execute', async (event: any, next: any) => {
+			const command = event?.input?.command ?? event?.call?.input?.command ?? '';
+			if (typeof command === 'string' && command.trim()) {
+				const check = validateCommand(command, { strict: config.strict });
+				if (check.blocked) {
+					return { reject: check.reason ?? 'dangerous command blocked' };
+				}
+			}
+			return next?.();
+		});
+		if (typeof offPre === 'function') disposers.push(offPre as () => void);
+
+		// System prompt injection — always delegate, never short-circuit
+		const offPreStep = ctx.on('agent/pre-step', async (event: any, next: any) => {
+			if (event && typeof event === 'object') {
+				event.systemMessages = [
+					...(event.systemMessages ?? []),
+					{ type: 'text', text: composeSystemPrompt() }
+				];
+			}
+			return next?.();
+		});
+		if (typeof offPreStep === 'function') disposers.push(offPreStep as () => void);
+
+		// Redact secrets from tool output — afterToolCall equivalent
+		const offPost = ctx.on('tools/post-execute', async (event: any) => {
+			const result = event?.result ?? event?.output ?? '';
+			if (typeof result === 'string' && result) {
+				const redacted = redactSecrets(result);
+				if (redacted !== result) {
+					event.result = redacted;
+					event.output = redacted;
+				}
+				if (result.includes('DEPRECATED')) {
+					event.additionalContext = 'DEPRECATED flagged';
+				}
+			}
+		});
+		if (typeof offPost === 'function') disposers.push(offPost as () => void);
+
+		// Observe turn end — emit via telemetry event bus if available, else no-op
+		const offTurn = ctx.on('turn/end', () => {
+			// Telemetry piggyback: apps wire this to their own telemetry service.
+			// No silent failure here — if ctx.telemetry is missing we simply skip.
+			if (config.verbose) {
+				try {
+					(ctx as any).telemetry?.event?.('massmith.turn_end', {
+						ts: Date.now(),
+						summary: summarizeTurn(0, false)
+					});
+				} catch {
+					// telemetry is optional; do not crash the turn loop
+				}
+			}
+		});
+		if (typeof offTurn === 'function') disposers.push(offTurn as () => void);
+
+		// Cleanup: run all disposers in reverse order (LIFO)
+		return () => {
+			while (disposers.length > 0) {
+				const dispose = disposers.pop()!;
+				try {
+					dispose();
+				} catch {
+					// swallow cleanup errors; keep draining
+				}
+			}
+		};
+	};
 }

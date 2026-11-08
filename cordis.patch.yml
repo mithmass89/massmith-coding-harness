@@ -3,3 +3,4 @@
   config:
     strict: true
     verbose: false
+    maxDiffLines: 400
