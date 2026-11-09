@@ -1,4 +1,5 @@
 import { Plugin } from '@opencode/plugin';
+import { readFileSync } from 'node:fs';
 import {
 	checkDiff,
 	composeSystemPrompt,
@@ -6,6 +7,21 @@ import {
 	summarizeTurn,
 	validateCommand
 } from '../../core/src/index.ts';
+
+const skillDirs = ['massmith-review', 'code-review', 'deployment', 'docs-bilingual'];
+function loadSkills(): string {
+	const texts: string[] = [];
+	for (const dir of skillDirs) {
+		try {
+			texts.push(readFileSync(new URL(`../../../skills/${dir}/SKILL.md`, import.meta.url), 'utf8'));
+		} catch {
+			// Skill files are optional; a missing skill never breaks the plugin boot.
+		}
+	}
+	return texts.join('\n\n');
+}
+
+const skillText = loadSkills();
 
 export default Plugin.define({
 	id: 'massmith-coding-harness',
@@ -100,7 +116,7 @@ export default Plugin.define({
 		});
 
 		await ctx.session.hook('context', event => {
-			event.system.push({ type: 'text', text: composeSystemPrompt() });
+			event.system.push({ type: 'text', text: composeSystemPrompt(skillText) });
 			if (verbose) {
 				event.options.temperature = 0.2;
 			}

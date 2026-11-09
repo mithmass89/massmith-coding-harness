@@ -37,6 +37,23 @@ declare module '@deepseek-ai/cordis' {
 
 export const inject = ['tools', 'commands', 'config'];
 
+const skillDirs = ['massmith-review', 'code-review', 'deployment', 'docs-bilingual'];
+function loadSkills(): string {
+  const texts: string[] = [];
+  for (const dir of skillDirs) {
+    try {
+      const text = require('node:fs').readFileSync(
+        new URL(`../../skills/${dir}/SKILL.md`, import.meta.url),
+        'utf8'
+      );
+      texts.push(text);
+    } catch {
+      // Skill files are optional; a missing skill never breaks the plugin boot.
+    }
+  }
+  return texts.join('\n\n');
+}
+
 interface MassmithConfig {
 	strict?: boolean;
 	verbose?: boolean;
@@ -65,6 +82,7 @@ export default function massmithPlugin(ctx: Context & { config?: unknown }) {
 	}
 	const config = parseConfig(rawConfig);
 	const disposers: Array<() => void> = [];
+	const skillText = loadSkills();
 
 	return () => {
 		// Tool: diff_check — reversible via disposer returned from register
@@ -131,7 +149,7 @@ export default function massmithPlugin(ctx: Context & { config?: unknown }) {
 			if (event && typeof event === 'object') {
 				event.systemMessages = [
 					...(event.systemMessages ?? []),
-					{ type: 'text', text: composeSystemPrompt() }
+					{ type: 'text', text: composeSystemPrompt(skillText) }
 				];
 			}
 			return next?.();

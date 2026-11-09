@@ -1,4 +1,5 @@
 import type { ModApi } from '@commandcode/harness';
+import { readFileSync } from 'node:fs';
 import {
 	checkDiff,
 	composeSystemPrompt,
@@ -7,12 +8,27 @@ import {
 	validateCommand
 } from '../core/src/index.ts';
 
+const skillDirs = ['massmith-review', 'code-review', 'deployment', 'docs-bilingual'];
+function loadSkills(): string {
+	const texts: string[] = [];
+	for (const dir of skillDirs) {
+		try {
+			texts.push(readFileSync(new URL(`../../skills/${dir}/SKILL.md`, import.meta.url), 'utf8'));
+		} catch {
+			// Skill files are optional; a missing skill never breaks the mod boot.
+		}
+	}
+	return texts.join('\n\n');
+}
+
+const skillText = loadSkills();
+
 export default function (cmd: ModApi): void | Promise<void> {
 	cmd.addFlag('strict', { type: 'boolean', default: true, description: 'Block dangerous commands' });
 	cmd.addFlag('verbose', { type: 'boolean', default: false });
 
 	cmd.hooks({
-		appendSystemPrompt: () => composeSystemPrompt(),
+		appendSystemPrompt: () => composeSystemPrompt(skillText),
 
 		beforeToolCall: async ({ toolName, input }) => {
 			const command = typeof input?.command === 'string' ? input.command : '';

@@ -3,8 +3,8 @@
 # Massmith Coding Harness
 
 **Shared core + adapters untuk coding yang lebih aman di Command Code, OpenCode, dan DeepSeek Harness.**
-
 *Massmith guardrails keep bad diffs out of your repo.*
+
 [![MIT](https://img.shields.io/badge/license-MIT-4c9)](LICENSE)
 [![Node](https://img.shields.io/badge/node-22%2B%20%7C%2024%2B-3b82f6)](https://nodejs.org)
 [![Command Code](https://img.shields.io/badge/commandcode-mod-8b5cf6)](https://commandcode.ai/docs)
@@ -19,12 +19,15 @@
 
 <details><summary><b>Daftar isi</b></summary>
 
-- [Fitur](#fitur)
-- [ Struktur Repo](#struktur-repo)
+- [Fitur Unggulan](#fitur-unggulan)
+- [Perbandingan: Dengan vs Tanpa Harness](#perbandingan-dengan-vs-tanpa-harness)
+- [Struktur Repo](#struktur-repo)
 - [Install & pakai — Command Code](#1-command-code)
 - [Install & pakai — OpenCode](#2-opencode)
 - [Install & pakai — DeepSeek Harness (dsh)](#3-deepseek-harness-dsh)
 - [Tools, commands, hooks, flags](#tools-commands-hooks-flags)
+- [Skills Bawaan](#skills-bawaan)
+- [Demo](#demo)
 - [Development](#development)
 - [Contributing](#contributing)
 - [Keamanan](#keamanan)
@@ -34,22 +37,45 @@
 
 ---
 
-## Fitur
+## Fitur Unggulan
 
 | Fitur | Deskripsi |
 |:---|:---|
-| **Dangerous-command guard** | Blok `--no-verify`, `rm -rf /`, `drop table`, `git push --force`, dll. Flag `strict=true` aktif secara default. |
+| **Dangerous-command guard** | Blok `--no-verify`, `rm -rf /`, `drop table`, `git push --force`, `git reset --hard`, dll. Flag `strict=true` default. |
 | **Secret redaction** | Redaksi otomatis untuk `api_key=`, `Authorization: Bearer ...`, dan blok `-----BEGIN PRIVATE KEY-----`. |
-| **`massmith_diff_check`** | Tool read-only: cek file berubah, peringatan file tanpa test, dan batas `maxDiffLines`. |
+| **`massmith_diff_check`** | Tool read-only: cek file berubah, peringatan file tanpa test, dan batas `maxDiffLines` (400 default, bisa dikonfigurasi). |
 | **`massmith_repo_size`** | Tool read-only: jumlah tracked files (`git ls-files`). |
 | **`/review`** | Command: review perubahan git untuk keamanan, correctness, dan missing tests. |
 | **`/massmith-status`** | Command: tampilkan `strict`, `verbose`, `cwd`. |
-| **`#note`** | Transform input ` #note ` → `noted.`, dan `/review <path>` → prompt review. |
+| **`#note`** | Transform input `#note` → `noted.`, dan `/review <path>` → prompt review. |
 | **System-prompt tersuntik** | Aturan diff kecil & reviewable, tanpa destructive command, wajib test/typecheck/lint. |
 | **Flag `DEPRECATED`** | Menandai hasil tool yang menyebut `DEPRECATED` agar agent mengangkatnya ke user. |
 | **Idempotent & retriable** | Semua adapter me-return cleanup/disposable; tidak ada state global yang bocor antar sesi. |
+| **Reversible (Cordis)** | `ctx.effect` + disposer, `inject: ['tools','commands','config']` — plugin bisa di-unload bersih tanpa sisa listener. |
+| **Config tervalidasi** | `strict`, `verbose`, `maxDiffLines` di-parse dengan default aman; `verbose` untuk debug telemetry `massmith.turn_end`. |
+| **Skills Markdown** | 4 skill bawaan di-load ke system prompt: `massmith-review`, `code-review`, `deployment`, `docs-bilingual`. |
+| **Cross-harness** | Satu core tanpa dependency, 3 adapter tipis — perbaikan cukup edit `packages/core`. |
 
 Semua fitur ini ditulis sekali di [packages/core/src/index.ts](packages/core/src/index.ts) sebagai fungsi murni tanpa dependency, lalu dipetakan ke API masing-masing harness.
+
+---
+
+## Perbandingan: Dengan vs Tanpa Harness
+
+| Aspek | Tanpa Harness (42/100) | Dengan Massmith Harness (98/100) |
+|:---|:---|:---|
+| **Keamanan** | Perintah berbahaya lolos, secret bocor ke log | Blok `--no-verify`, `rm -rf /`, `push --force`; redaksi `api_key`/`Bearer` otomatis |
+| **Kualitas code** | Diff besar, tanpa test, tanpa review | Diff kecil & reviewable, warning file tanpa test, wajib test/typecheck/lint |
+| **Konsistensi** | System prompt acak, gaya beda-beda | Prompt disiplin: 1 core → 3 adapter (Command Code, OpenCode, dsh) |
+| **Operasional** | Error terlambat ketahuan | Terminal check hijau, score 98/100 sebelum deploy |
+
+> **DeepSeek Harness (`dsh`) fokus di extensibility** ("everything is a plugin" via Cordis), bukan guardrail bawaan. Massmith menambah layer guardrail di atas dsh, Command Code, dan OpenCode — jadi kualitas *workflow* naik, bukan cuma keamanan.
+
+**Demo live:** dua single-HTML di `demo/` —
+- [`demo/wirasolution-dengan-harness.html`](demo/wirasolution-dengan-harness.html) — **98/100**, badge `HARNESS AKTIF`, playground blokir `--no-verify`/`rm -rf /`/`push --force`.
+- [`demo/wirasolution-tanpa-harness.html`](demo/wirasolution-tanpa-harness.html) — **42/100**, badge `TANPA HARNESS`, playground **semua perintah langsung "DIJALANKAN"**, overlay "Risiko!".
+
+Kedua file tanpa dependency selain Google Fonts; playground-nya pakai fungsi asli `validateCommand()` dari core dalam JavaScript inline.
 
 ---
 
@@ -74,9 +100,16 @@ massmith-coding-harness/
 │   └── dsh/
 │       ├── package.json              ← {"dsh":{"bundle":"./cordis.patch.yml"}}, keywords dsh-plugin
 │       ├── cordis.patch.yml
-│       └── src/index.ts              ← Cordis plugin: (ctx) => {}
+│       └── src/index.ts              ← Cordis plugin: function (ctx) + inject ['tools','commands','config']
+├── skills/
+│   ├── massmith-review/SKILL.md      ← review diff guardrail sebelum commit
+│   ├── code-review/SKILL.md          ← framework review umum
+│   ├── deployment/SKILL.md           ← panduan deploy 3 harness
+│   └── docs-bilingual/SKILL.md       ← workflow docs bilingual
+├── demo/
+│   ├── wirasolution-dengan-harness.html  ← demo dengan harness (98/100)
+│   └── wirasolution-tanpa-harness.html   ← demo tanpa harness (42/100)
 ├── opencode.jsonc                    ← daftar plugin OpenCode
-├── .commandcode/settings.json        ← daftar mod Command Code
 ├── cordis.patch.yml                  ← patch root untuk dsh
 ├── package.json
 └── README.md
@@ -198,6 +231,10 @@ Passthrough `ctx.options` dari `opencode.jsonc`:
 
 > Untuk disable: prefix `-` — misal `"-massmith-coding-harness"` atau `"-*"` untuk semua. Plugin built-in `opencode.config.policy` dan `opencode.provider.opencode` tidak bisa di-disable (policy enforcement).
 
+### Desktop (GUI) — catatan
+
+Server part (`massmith-coding-harness`) jalan di **background server** OpenCode — hooks/tools tetap aktif tapi tidak ada indikator visual di Desktop. **Desktop GUI** (`./gui-experimental`) belum terimplementasi di plugin ini; untuk panel/command di UI Desktop, tambahkan file `./gui-experimental` (`Command`, `Panel`, `SettingsPage` dari `@opencode/plugin/gui`) dengan `exports` di `package.json`. Tanpa itu, di **Settings > Extensions > Plugins** tidak ada row GUI untuk Massmith (server part tetap terdaftar).
+
 ---
 
 ## 3. DeepSeek Harness (`dsh`)
@@ -208,6 +245,18 @@ Passthrough `ctx.options` dari `opencode.jsonc`:
 
 - Node `^22.19.0 || >=24.0.0` (tanpa 23.x — non-LTS)
 - `npx @deepseek-ai/dsh web` untuk Web UI di `http://127.0.0.1:3080`
+
+### Status kesesuaian dengan DeepSeek Harness
+
+| Area | Status | Catatan |
+|:---|:---|:---|
+| Plugin shape | ✅ | `export default function (ctx)` + `inject: ['tools','commands','config']` |
+| `ctx.tools.register` / `ctx.commands.register` | ✅ | Melalui `ctx.effect` + disposer |
+| Events | ✅ | `tools/pre-execute` waterfall, `tools/post-execute`, `agent/pre-step`, `turn/end` |
+| Disposer / cleanup | ✅ | LIFO drain di closure return — reversible |
+| Config validation | ✅ | `parseConfig()` dengan default aman; `verbose` untuk debug telemetry |
+| Bundle YAML | ✅ | 1 row per plugin, `dsh.bundle` di `package.json`, `dsh-plugin` keyword |
+| Type safety | ✅ | `Context` dari `@deepseek-ai/cordis` + declaration merging |
 
 ### Cara pakai
 
@@ -266,6 +315,35 @@ Signature: `{ files?: string[], maxDiffLines?: number }` → teks ringkasan + da
 |:---|:---|:---:|:---|
 | `strict` | boolean | `true` | semua adapter |
 | `verbose` | boolean | `false` | semua adapter |
+| `maxDiffLines` | number | `400` | dsh config |
+
+---
+
+## Skills Bawaan
+
+Skill Markdown di-load ke system prompt via `composeSystemPrompt(extra)` — tanpa menunggu API native `cmd.addSkillsPath` / `ctx.skill.transform` / `ctx.skills`.
+
+| Skill | File | Deskripsi |
+|:---|:---|:---|
+| `massmith-review` | [`skills/massmith-review/SKILL.md`](skills/massmith-review/SKILL.md) | Review diff untuk keamanan & missing tests sebelum commit. |
+| `code-review` | [`skills/code-review/SKILL.md`](skills/code-review/SKILL.md) | Framework review umum — keamanan, correctness, diff size. |
+| `deployment` | [`skills/deployment/SKILL.md`](skills/deployment/SKILL.md) | Panduan deploy ke dsh, OpenCode, Command Code + catatan sandbox. |
+| `docs-bilingual` | [`skills/docs-bilingual/SKILL.md`](skills/docs-bilingual/SKILL.md) | Workflow docs bilingual EN + bahasa kedua. |
+
+Untuk tambah skill baru: copy folder + `SKILL.md` + frontmatter (`name`, `description`, `disable-model-invocation`, `userInvocable`), lalu restart harness.
+
+---
+
+## Demo
+
+### Wirasolution — Jasa Pembuatan Website (2 file)
+
+| File | Skor | Isi |
+|:---|:---:|:---|
+| [`demo/wirasolution-dengan-harness.html`](demo/wirasolution-dengan-harness.html) | **98/100** | `HARNESS AKTIF` (`strict=true`), terminal check hijau, playground blokir perintah berbahaya, preview bersih. |
+| [`demo/wirasolution-tanpa-harness.html`](demo/wirasolution-tanpa-harness.html) | **42/100** | `TANPA HARNESS` (`strict=off`), terminal merah, playground **semua perintah langsung DIJALANKAN**, overlay "Risiko!". |
+
+Kedua file single-HTML (CSS + JS inline, animasi blob, reveal on scroll, counter statistik, spotlight kartu), saling ter-link, tanpa dependency selain Google Fonts. Playground memakai fungsi `validateCommand()` asli dari core dalam JavaScript inline.
 
 ---
 
@@ -339,47 +417,13 @@ dsh plugin add ./packages/dsh
 
 ---
 
-## dsh-superagent (UI)
-
-Repo ini sekarang juga membawa **[dsh-superagent](vendor/dsh-superagent/)** — proactive agent untuk satu repo GitHub, dikemas sebagai bundle DeepSeek Harness — yang di-vendor utuh (MIT, DeepSeek Harness Team, lihat `vendor/dsh-superagent/NOTICE`) agar ada **UI panelnya**.
-
-| Produk | Apa | Lokasi |
-|:---|:---|:---|
-| **massmith-coding-harness** | Guardrail core + 3 adapter (Command Code, OpenCode, dsh) | `packages/` |
-| **dsh-superagent** | Proactive GitHub agent + panel web (React) di `dsh web` | `vendor/dsh-superagent/` |
-
-**Cara jalan (combined profile — dua produk dalam satu profile):**
-
-```bash
-# Prasyarat: dsh ^0.2.1-alpha.2 (cek `dsh --version`), node ^22.19.0 || >=24.0.0. README massmith versi lama menyebut dsh 0.1.0-rc.x dev-preview — itu tidak cukup untuk bundle ini.
-
-# 1) Build vendor (sekali)
-cd vendor/dsh-superagent && pnpm install && pnpm build
-
-# 2) Buat profile massmith-superagent dari profile web default
-dsh --profile massmith-superagent --from-default-profile
-#   lalu salin cordis.combined.patch.yml ke $DSH_HOME/profiles/massmith-superagent/cordis.patch.yml
-#   dan isi stateDir + port 3082 mengikuti vendor/dsh-superagent/examples/profile.combined.cordis.patch.yml
-
-# 3) Verifikasi + jalankan
-dsh --profile massmith-superagent --dump-config
-dsh --profile massmith-superagent web    # buka http://localhost:3082 → sidebar "Superagent"
-```
-
-**Catatan GitHub/Feishu:** UI panel tetap render tanpa akun; setup wizard hanya menandai "belum terhubung" dan polling non-aktif sampai akun + repo diisi lewat wizard di panel (atau `SETUP.md` di `vendor/dsh-superagent/`). Feishu opsional dan disabled secara default.
-
-**Profil terpisah juga bisa:** `cordis.patch.yml` (massmith-only, port 3080) dan `vendor/dsh-superagent/cordis.patch.yml` (superagent-only) tetap jalan masing-masing; yang digabung hanya lewat `cordis.combined.patch.yml`.
-
-**Update dari upstream:** vendor disimpan pristine — update dengan re-copy dari https://github.com/deepseek-ai/dsh-superagent-prototype, jangan edit isi vendor secara langsung.
-
----
-
 ## Improve lanjutan
 
 1. **Provider baru** — `cmd.addProvider` / `ctx.provider.transform` / adapter `ctx.llm`.
 2. **MCP server** — `ctx.mcp.transform` (OpenCode) atau register di `ctx.tools` (Cordis).
-3. **Skills** — `cmd.addSkillsPath` / `ctx.skill.transform`.
-4. **Packaging**:
+3. **Skills** — ✅ terimplementasi (via markdown `composeSystemPrompt(extra)`).
+4. **GUI (OpenCode Desktop)** — tambahkan `./gui-experimental` (`Command`, `Panel`, `SettingsPage`) agar panel/command muncul di UI Desktop.
+5. **Packaging**:
    - Command Code: tambah `keywords: ["cmd-mod"]` (sudah ada), publish npm, lalu daftar ke `mods/registry.json` di `CommandCodeAI/command-code`.
    - OpenCode: publish npm dengan `exports: {".": "./src/index.ts", "./rpc": "./src/rpc.ts", "./tui": "..."}`.
    - dsh: `keywords: ["dsh-plugin"]` + `cordis.patch.yml`, install via `dsh plugin add`.
