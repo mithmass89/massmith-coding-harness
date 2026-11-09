@@ -59,6 +59,9 @@ dist/
 # opencode local state (should be kept in home dir)
 .opencode/
 
+# superagent per-project ticket database
+.dsh/
+
 # OS
 .DS_Store
 Thumbs.db
