@@ -27,6 +27,7 @@
 - [Install & pakai — DeepSeek Harness (dsh)](#3-deepseek-harness-dsh)
 - [Tools, commands, hooks, flags](#tools-commands-hooks-flags)
 - [Skills Bawaan](#skills-bawaan)
+- [Gabungan dengan Superagent](#gabungan-dengan-superagent)
 - [Demo](#demo)
 - [Development](#development)
 - [Contributing](#contributing)
@@ -334,6 +335,75 @@ Untuk tambah skill baru: copy folder + `SKILL.md` + frontmatter (`name`, `descri
 
 ---
 
+## Gabungan dengan Superagent
+
+Massmith (guardrail) dan **Superagent** ([mithmass89/opencode-superagent](https://github.com/mithmass89/opencode-superagent), alur Trigger → Eval/gate → Ticket → Assignment) **berdampingan dan saling melengkapi** — tidak perlu dipilih salah satu.
+
+| Lapisan | Massmith | Superagent |
+|:---|:---|:---|
+| **Peran** | Keamanan & kualitas kode | Workflow tiket |
+| **Plugin id** | `massmith-coding-harness` | `dsh-superagent` |
+| **Tools** | `massmith/diff_check`, `massmith/repo_size` | `dsh_intake`, `dsh_list`, `dsh_accept`, `dsh_stop` |
+| **Commands** | `/review`, `/massmith-status` | `/dsh-triage`, `/dsh-status` |
+| **Storage** | `ctx.storage` (namespace per plugin) | `<project>/.dsh/tickets.sqlite` |
+| **Background** | Tidak ada | Poll GitHub (opsional, `pollIntervalMs`) |
+
+Karena id, nama tool/command, dan namespace storage berbeda, keduanya **tidak saling menimpa**.
+
+### Pasang sekali, dua plugin otomatis aktif
+
+**OpenCode (global, semua project):**
+
+1. Salin kedua folder ke `~/.config/opencode/plugins/`:
+   - `massmith/` (dari `packages/opencode` + `core/`)
+   - `dsh-superagent/` (dari repo superagent)
+2. Daftarkan keduanya di `~/.config/opencode/opencode.jsonc` — **urutan penting**:
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugins": [
+    { "package": "./plugins/massmith", "options": { "strict": true, "verbose": false } },
+    { "package": "./plugins/dsh-superagent", "options": { "mention": "@superagent", "requireMention": true, "autoMode": true, "pollIntervalMs": 0 } }
+  ]
+}
+```
+
+> Massmith **harus di baris pertama**: hook `execute.before`-nya memblokir perintah berbahaya sebelum tool apa pun (termasuk `dsh_*`) berjalan.
+
+3. Verifikasi: `opencode plugin list` harus menampilkan **dua** baris dengan ID (bukan `-`):
+
+```
+ID                       VERSION  SOURCE
+dsh-superagent           local    C:\Users\...\plugins\dsh-superagent
+massmith-coding-harness  local    C:\Users\...\plugins\massmith
+```
+
+**Command Code (global):**
+
+- `~/.commandcode/mods/massmith.ts` (+ `~/.commandcode/core/src/index.ts`, `~/.commandcode/skills/`)
+- `~/.commandcode/mods/dsh-superagent.ts`
+- Cek dengan `cmd mods list` → dua baris `· user ·`.
+
+> **Penting:** mod adapter memakai import relatif ke core (`../core/src/index.ts`) dan skills (`../skills/`). Kalau memindahkan file mod, salin juga `core/` dan `skills/` — atau minta plugin dijalankan sebagai package (`cmd mods add ./packages/commandcode -g`).
+
+### Yang terjadi saat keduanya aktif
+
+1. **Prompt masuk** — Massmith menyuntik aturan disiplin (diff kecil, wajib test, redaksi secret) dan Superagent menyuntik reminder Trigger→Gate→Ticket.
+2. **Tool dipanggil** — Massmith memblokir perintah berbahaya lebih dulu; sisanya diteruskan ke Superagent (`dsh_intake` mencatat Trigger, gate policy memutuskan, Ticket dibuat).
+3. **Hasil tool** — Massmith meredaksi secret + menandai `DEPRECATED`; Superagent menyimpan tiket ke SQLite.
+4. **Akhir turn** — Massmith menampilkan summary; Superagent memperbarui status tiket / poll GitHub (jika diaktifkan).
+
+### Kapan sebaiknya hanya salah satu?
+
+| Kebutuhan | Pakai |
+|:---|:---|
+| Cuma mau aman saat coding | Massmith saja |
+| Cuma mau workflow tiket dari issue GitHub | Superagent saja |
+| Tim: issue masuk → tiket → dikerjakan agent dengan guardrail | **Keduanya** (disarankan) |
+
+---
+
 ## Demo
 
 ### Wirasolution — Jasa Pembuatan Website (2 file)
@@ -383,19 +453,30 @@ Output: `core.test.ts: all assertions passed`
 ### Perintah verifikasi per-adapter
 
 ```bash
-# Command Code
-cmd --mod ./packages/commandcode/index.ts
+# Command Code — cek mod yang ter-load (user + project scope)
 cmd mods list
 cmd mods inspect ./packages/commandcode/index.ts
 
-# OpenCode
+# Command Code — headless sanity check dengan mod
+cmd -p "halo" --mod ./packages/commandcode/index.ts
+
+# OpenCode — daftar plugin yang ter-load (harus muncul dengan ID, bukan "-")
 opencode plugin list
-touch .opencode/plugins/massmith/index.ts; opencode service restart
+
+# OpenCode Desktop (bundled CLI v2.x, schema `plugins`)
+"C:\Users\<you>\AppData\Local\Programs\ai.opencode.desktop\resources\opencode-cli.exe" plugin list
+
+# OpenCode — validasi config
+opencode debug config
 
 # dsh
 dsh --profile web --dump-config
 dsh plugin add ./packages/dsh
 ```
+
+> **Catatan versi:** OpenCode CLI npm 1.x memakai key `plugin` (string/array), sedangkan OpenCode v2.x (termasuk desktop) memakai `plugins` (array of string atau `{package, options}`). Kalau `opencode debug config` error `Unrecognized key: plugins`, CLI kamu versi 1.x — pakai CLI bawaan desktop untuk memvalidasi.
+
+> **Catatan ID `-`:** baris plugin dengan ID `-` berarti server part gagal load. Penyebab paling umum: import relatif ke `core/` atau skills tidak ada di lokasi install global. Pastikan `core/src/index.ts` ada di sebelah plugin.
 
 ### Kontribusi
 
