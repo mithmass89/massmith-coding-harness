@@ -1,0 +1,15 @@
+# Example profile configuration ($DSH_HOME/profiles/superagent/cordis.patch.yml).
+# Copy this file into the profile dir and replace <placeholders> before first start;
+# see vendor/dsh-superagent/docs/006-deployment.md. This file is the machine
+# configuration for the combined profile (massmith + dsh-superagent in one profile);
+# the bundle loading itself lives in cordis.combined.patch.yml at the repo root.
+- id: webserver
+  config:
+    host: 127.0.0.1
+    port: 3082
+- id: dsh-superagent
+  config:
+    stateDir: <absolute path, for example C:\Users\...\ .dsh\state\superagent>
+# Feishu is optional: uncomment to enable its Source, then set the bot's lark-cli on the Feishu Source.
+# - id: dsh-superagent-feishu
+#   disabled: false

@@ -339,6 +339,41 @@ dsh plugin add ./packages/dsh
 
 ---
 
+## dsh-superagent (UI)
+
+Repo ini sekarang juga membawa **[dsh-superagent](vendor/dsh-superagent/)** — proactive agent untuk satu repo GitHub, dikemas sebagai bundle DeepSeek Harness — yang di-vendor utuh (MIT, DeepSeek Harness Team, lihat `vendor/dsh-superagent/NOTICE`) agar ada **UI panelnya**.
+
+| Produk | Apa | Lokasi |
+|:---|:---|:---|
+| **massmith-coding-harness** | Guardrail core + 3 adapter (Command Code, OpenCode, dsh) | `packages/` |
+| **dsh-superagent** | Proactive GitHub agent + panel web (React) di `dsh web` | `vendor/dsh-superagent/` |
+
+**Cara jalan (combined profile — dua produk dalam satu profile):**
+
+```bash
+# Prasyarat: dsh ^0.2.1-alpha.2 (cek `dsh --version`), node ^22.19.0 || >=24.0.0. README massmith versi lama menyebut dsh 0.1.0-rc.x dev-preview — itu tidak cukup untuk bundle ini.
+
+# 1) Build vendor (sekali)
+cd vendor/dsh-superagent && pnpm install && pnpm build
+
+# 2) Buat profile massmith-superagent dari profile web default
+dsh --profile massmith-superagent --from-default-profile
+#   lalu salin cordis.combined.patch.yml ke $DSH_HOME/profiles/massmith-superagent/cordis.patch.yml
+#   dan isi stateDir + port 3082 mengikuti vendor/dsh-superagent/examples/profile.combined.cordis.patch.yml
+
+# 3) Verifikasi + jalankan
+dsh --profile massmith-superagent --dump-config
+dsh --profile massmith-superagent web    # buka http://localhost:3082 → sidebar "Superagent"
+```
+
+**Catatan GitHub/Feishu:** UI panel tetap render tanpa akun; setup wizard hanya menandai "belum terhubung" dan polling non-aktif sampai akun + repo diisi lewat wizard di panel (atau `SETUP.md` di `vendor/dsh-superagent/`). Feishu opsional dan disabled secara default.
+
+**Profil terpisah juga bisa:** `cordis.patch.yml` (massmith-only, port 3080) dan `vendor/dsh-superagent/cordis.patch.yml` (superagent-only) tetap jalan masing-masing; yang digabung hanya lewat `cordis.combined.patch.yml`.
+
+**Update dari upstream:** vendor disimpan pristine — update dengan re-copy dari https://github.com/deepseek-ai/dsh-superagent-prototype, jangan edit isi vendor secara langsung.
+
+---
+
 ## Improve lanjutan
 
 1. **Provider baru** — `cmd.addProvider` / `ctx.provider.transform` / adapter `ctx.llm`.

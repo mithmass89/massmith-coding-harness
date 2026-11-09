@@ -27,6 +27,10 @@
 	"scripts": {
 		"test": "node --import tsx packages/core/src/__tests__/core.test.ts",
 		"verify:commandcode": "node --import tsx packages/commandcode/index.ts",
-		"verify:opencode": "node --import tsx packages/opencode/src/index.ts"
+		"verify:opencode": "node --import tsx packages/opencode/src/index.ts",
+		"dsh:web": "dsh --profile web --patch ./cordis.patch.yml",
+		"dsh:combined": "dsh --profile massmith-superagent --patch ./cordis.combined.patch.yml",
+		"dsh:combined:dump": "dsh --profile massmith-superagent --patch ./cordis.combined.patch.yml --dump-config",
+		"superagent:check": "cd vendor/dsh-superagent && pnpm check"
 	}
 }

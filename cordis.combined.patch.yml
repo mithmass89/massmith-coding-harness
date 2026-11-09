@@ -1,0 +1,24 @@
+# Combined massmith + dsh-superagent profile.
+#
+# Loads massmith guardrails (massmith-dsh bundle) AND the vendored dsh-superagent
+# bundle in ONE profile. UI appears in `dsh web` sidebar as "Superagent"; massmith
+# hooks run on all tool calls. Web server defaults (host/port) come from the profile
+# template; override with --port at boot time if needed.
+#
+# Usage (both bundles installed via `dsh plugin add link:...`):
+#   dsh --profile superagent --dump-config
+#   dsh --profile superagent web    # then open http://localhost:3082
+#
+# Machine configuration (`dsh-superagent` stateDir, `webserver` port) lives in the
+# profile's cordis.patch.yml per docs/006-deployment.md — replace its contents with
+# vendor/dsh-superagent/examples/profile.combined.cordis.patch.yml (fill stateDir).
+# This file only loads the two bundles together; detail on setup lives upstream.
+# Upstream shape: an `insert:` block for new entries plus id-targeted config
+# overrides for entries that already exist in the merged tree.
+- insert:
+    - id: massmith
+      name: massmith-dsh
+      config:
+        strict: true
+        verbose: false
+        maxDiffLines: 400

@@ -2,11 +2,14 @@
 # Mounted as a layer after dsh-base. Replace or insert rows here.
 # See: https://deepseek-harness.github.io/deepseek-harness/en/reference/
 # Only ONE row per plugin is needed — duplicate rows loading the same file are removed.
+# NOTE: loader patches address entries by `id`, and insert rows add new entries.
+# A bare `- id:` row targets an entry that already exists; new entries must use `insert:`.
 
 ---
-- id: massmith
-  plugin: ./src/index.ts
-  config:
-    strict: true
-    verbose: false
-    maxDiffLines: 400
+- insert:
+  - id: massmith
+    name: massmith-dsh
+    config:
+      strict: true
+      verbose: false
+      maxDiffLines: 400

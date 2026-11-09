@@ -22,6 +22,9 @@ pids/
 
 # Dependency directories
 node_modules/
+# Vendored build output (dsh-superagent bundle)
+vendor/**/lib/
+vendor/**/node_modules/
 
 # Dist
 dist/

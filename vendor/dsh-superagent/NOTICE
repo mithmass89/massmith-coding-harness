@@ -1,0 +1,8 @@
+dsh-superagent — vendored copy of https://github.com/deepseek-ai/dsh-superagent-prototype
+License: MIT (see ./LICENSE, copyright DeepSeek Harness Team)
+Vendored into massmith-coding-harness (MIT, massmitro89) for the combined dsh profile.
+
+Local Windows patch (massmith): `src/deployment.ts` accepts Windows drive paths (`C:\...`/`C:/...`)
+in addition to POSIX absolute paths for `stateDir`. Without this, the plugin refuses to start on
+Windows. Test files `tests/deployment.spec.ts` that require POSIX-only paths may behave
+differently on Windows (sh scripts). Re-apply hunk after any re-vendor from upstream.

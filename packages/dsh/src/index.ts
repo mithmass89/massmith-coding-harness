@@ -1,11 +1,23 @@
+import { createRequire } from 'node:module';
+
 import type { Context } from '@deepseek-ai/cordis';
-import {
-	checkDiff,
-	composeSystemPrompt,
-	redactSecrets,
-	summarizeTurn,
-	validateCommand
+import type {
+	checkDiff as checkDiffType,
+	composeSystemPrompt as composeSystemPromptType,
+	redactSecrets as redactSecretsType,
+	summarizeTurn as summarizeTurnType,
+	validateCommand as validateCommandType
 } from '../../core/src/index.ts';
+
+const require = createRequire(import.meta.url);
+const core = require('../../core/src/index.ts') as {
+	checkDiff: typeof checkDiffType;
+	composeSystemPrompt: typeof composeSystemPromptType;
+	redactSecrets: typeof redactSecretsType;
+	summarizeTurn: typeof summarizeTurnType;
+	validateCommand: typeof validateCommandType;
+};
+const { checkDiff, composeSystemPrompt, redactSecrets, summarizeTurn, validateCommand } = core;
 
 declare module '@deepseek-ai/cordis' {
 	interface Context {
@@ -13,7 +25,7 @@ declare module '@deepseek-ai/cordis' {
 			register: (tool: unknown) => void | (() => void);
 		};
 		commands: {
-			register: (cmd: unknown) => void | (() => void);
+			register: (cmd: unknown) => void | (() => void) | Promise<void | (() => void)>;
 		};
 		effect: (fn: () => void | (() => void), id?: string) => void;
 		on: (
@@ -23,7 +35,7 @@ declare module '@deepseek-ai/cordis' {
 	}
 }
 
-export const inject = ['tools', 'commands'];
+export const inject = ['tools', 'commands', 'config'];
 
 interface MassmithConfig {
 	strict?: boolean;
@@ -42,7 +54,16 @@ function parseConfig(raw: unknown): Required<MassmithConfig> {
 }
 
 export default function massmithPlugin(ctx: Context & { config?: unknown }) {
-	const config = parseConfig(ctx.config);
+	// `ctx.config` is only populated when this plugin is declared with
+	// `inject: ['config', ...]`; without it, Cordis throws
+	// `cannot get property "config" without inject`. Read defensively.
+	let rawConfig: unknown;
+	try {
+		rawConfig = (ctx as { config?: unknown }).config;
+	} catch {
+		rawConfig = undefined;
+	}
+	const config = parseConfig(rawConfig);
 	const disposers: Array<() => void> = [];
 
 	return () => {

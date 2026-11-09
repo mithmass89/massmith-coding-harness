@@ -9,7 +9,9 @@
 		".": "./src/index.ts"
 	},
 	"dsh": {
-		"bundle": "./cordis.patch.yml"
+		"bundle": {
+			"patch": "./cordis.patch.yml"
+		}
 	},
 	"peerDependencies": {
 		"@deepseek-ai/cordis": "latest"
