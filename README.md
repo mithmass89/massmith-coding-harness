@@ -340,6 +340,13 @@ Skill Markdown di-load ke system prompt via `composeSystemPrompt(extra)` — tan
 | `code-review` | [`skills/code-review/SKILL.md`](skills/code-review/SKILL.md) | Framework review umum — keamanan, correctness, diff size. |
 | `deployment` | [`skills/deployment/SKILL.md`](skills/deployment/SKILL.md) | Panduan deploy ke dsh, OpenCode, Command Code + catatan sandbox. |
 | `docs-bilingual` | [`skills/docs-bilingual/SKILL.md`](skills/docs-bilingual/SKILL.md) | Workflow docs bilingual EN + bahasa kedua. |
+| `ui-ux-pro-max` | [`skills/ui-ux-pro-max/SKILL.md`](skills/ui-ux-pro-max/SKILL.md) | Design intelligence UI/UX (80 style, 192 palet, reasoning rules; MIT, nextlevelbuilder). |
+| `3dviz-pro-max` | [`skills/3dviz-pro-max/SKILL.md`](skills/3dviz-pro-max/SKILL.md) | Visualisasi 3D Three.js/Blender (223 recipe, 22 kit; MIT, viettranx). |
+| `frontend-design` | [`skills/frontend-design/SKILL.md`](skills/frontend-design/SKILL.md) | Prinsip desain visual generik (official Anthropic, anthropics/skills). |
+| `using-superpowers` | [`skills/using-superpowers/SKILL.md`](skills/using-superpowers/SKILL.md) | Disiplin pakai-skill-dulu sebelum merespons (obra/superpowers). |
+| `unit-test` | [`skills/unit-test/SKILL.md`](skills/unit-test/SKILL.md) | Generate unit test + edge case per framework (official skills-hub-registry, signed). |
+| `code-review-and-quality` | [`skills/code-review-and-quality/SKILL.md`](skills/code-review-and-quality/SKILL.md) | Review 5 sumbu + quality gate, sizing, dependency discipline (MIT, addyosmani). |
+| `context-engineering` | [`skills/context-engineering/SKILL.md`](skills/context-engineering/SKILL.md) | Kurasi konteks agen: hierarki, budget, confusion handling (MIT, addyosmani). |
 
 Untuk tambah skill baru: copy folder + `SKILL.md` + frontmatter (`name`, `description`, `disable-model-invocation`, `userInvocable`), lalu restart harness.
 

@@ -8,7 +8,7 @@ import {
 	validateCommand
 } from '../../core/src/index.ts';
 
-const skillDirs = ['massmith-review', 'code-review', 'deployment', 'docs-bilingual'];
+const skillDirs = ['massmith-review', 'code-review', 'deployment', 'docs-bilingual', 'ui-ux-pro-max', '3dviz-pro-max', 'frontend-design', 'using-superpowers', 'unit-test', 'code-review-and-quality', 'context-engineering'];
 function loadSkills(): string {
 	const texts: string[] = [];
 	for (const dir of skillDirs) {

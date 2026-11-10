@@ -14,20 +14,79 @@ import type { DiffStat } from '../../core/src/index.ts';
 export const name = 'massmith-dsh';
 export const inject = ['tools', 'commands'];
 
-const skillDirs = ['massmith-review', 'code-review', 'deployment', 'docs-bilingual'];
+const skillDirs = [
+	'massmith-review',
+	'code-review',
+	'deployment',
+	'docs-bilingual',
+	'ui-ux-pro-max',
+	'3dviz-pro-max',
+	'frontend-design',
+	'using-superpowers',
+	'unit-test',
+	'code-review-and-quality',
+	'context-engineering'
+];
 
-function loadOptionalSkills(): string {
-	const texts: string[] = [];
+interface LocalSkill {
+	name: string;
+	description: string;
+	content: string;
+	userInvocable: boolean;
+	modelInvocable: boolean;
+}
+
+function stripQuotes(value: string): string {
+	const trimmed = value.trim();
+	if (trimmed.length >= 2) {
+		const first = trimmed[0];
+		const last = trimmed[trimmed.length - 1];
+		if ((first === '"' && last === '"') || (first === "'" && last === "'")) {
+			return trimmed.slice(1, -1).trim();
+		}
+	}
+	return trimmed;
+}
+
+function parseSkillFile(dir: string, raw: string): LocalSkill {
+	const frontmatter = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+	const body = frontmatter ? raw.slice(frontmatter[0].length) : raw;
+	const meta: Record<string, string> = {};
+	if (frontmatter) {
+		for (const line of frontmatter[1].split(/\r?\n/)) {
+			const match = line.match(/^([\w-]+)\s*:\s*(.+)$/);
+			if (match) meta[match[1]] = match[2].trim();
+		}
+	}
+	return {
+		name: stripQuotes(meta.name) || dir,
+		description: stripQuotes(meta.description) || dir,
+		content: raw,
+		userInvocable: meta.userInvocable !== 'false',
+		modelInvocable: meta['disable-model-invocation'] !== 'true'
+	};
+}
+
+function loadLocalSkills(): LocalSkill[] {
+	const skills: LocalSkill[] = [];
 	for (const dir of skillDirs) {
 		try {
-			texts.push(
-				readFileSync(new URL(`../../../skills/${dir}/SKILL.md`, import.meta.url), 'utf8')
+			const raw = readFileSync(
+				new URL(`../../../skills/${dir}/SKILL.md`, import.meta.url),
+				'utf8'
 			);
+			skills.push(parseSkillFile(dir, raw));
 		} catch {
 			// A missing skill must not break plugin boot.
 		}
 	}
-	return texts.join('\n\n');
+	return skills;
+}
+
+function loadOptionalSkills(): string {
+	return loadLocalSkills()
+		.map(skill => skill.content)
+		.join('\n\n');
 }
 
 export interface MassmithConfig {
@@ -114,19 +173,24 @@ function getService<T>(ctx: unknown, name: string): T | undefined {
 	const record = ctx as Record<string, unknown> | undefined;
 	if (!record) return undefined;
 	try {
-		const get = (record as { get?: (key: string) => unknown }).get;
+		const get = (record as { get?: (key: string, strict?: boolean) => unknown }).get;
 		if (typeof get === 'function') {
+			// Non-strict first: inactive services also resolve without throwing.
+			// Never fall back to record[name]: on Cordis that property read
+			// throws "cannot get property ... without inject" when undeclared.
+			try {
+				const loose = get.call(record, name, false);
+				if (loose !== undefined) return loose as T;
+			} catch {
+				// Fall through to the strict lookup below.
+			}
 			const value = get.call(record, name);
 			if (value !== undefined) return value as T;
 		}
 	} catch {
 		// Optional services may throw on lookup when absent.
 	}
-	try {
-		return record[name] as T | undefined;
-	} catch {
-		return undefined;
-	}
+	return undefined;
 }
 
 function registerEffect(ctx: Context, register: () => unknown): void {
@@ -447,6 +511,40 @@ function registerPostExecute(ctx: Context): void {
 	});
 }
 
+function registerNativeSkills(ctx: Context, skills: LocalSkill[]): number {
+	const registry = getService<{
+		register?: (skill: {
+			name: string;
+			description: string;
+			content: string;
+			source: 'bundled';
+			invocation: { modelInvocable: boolean; userInvocable: boolean };
+		}) => unknown;
+	}>(ctx, 'skills');
+	if (!registry || typeof registry.register !== 'function') return 0;
+	let count = 0;
+	for (const skill of skills) {
+		try {
+			registerEffect(ctx, () =>
+				registry.register?.({
+					name: skill.name,
+					description: skill.description,
+					content: skill.content,
+					source: 'bundled',
+					invocation: {
+						modelInvocable: skill.modelInvocable,
+						userInvocable: skill.userInvocable
+					}
+				})
+			);
+			count++;
+		} catch {
+			// One bad skill must not break plugin boot.
+		}
+	}
+	return count;
+}
+
 function registerSystemPrompt(ctx: Context, skillText: string): void {
 	const systemPrompt = getService<{
 		section?: (section: { name: string; order: number; text: string }) => unknown;
@@ -577,8 +675,22 @@ function registerCommands(ctx: Context, config: ResolvedMassmithConfig): void {
 }
 
 export function apply(ctx: Context, rawConfig?: unknown): void {
+	// Cordis passes the validated row config as the 2nd arg. Only fall back
+	// to the optional `config` service via a throw-safe lookup — never via
+	// a direct property read (that throws without an inject declaration).
 	const config = parseConfig(rawConfig ?? getService(ctx, 'config'));
-	const skillText = loadOptionalSkills();
+	const localSkills = loadLocalSkills();
+	const nativeCount = registerNativeSkills(ctx, localSkills);
+	// DSH-native path: full bodies live in ctx.skills (lazy-loaded via
+	// tool-skill), the prompt section only carries the policy + catalogue.
+	// Fallback (no skills service, e.g. old hosts/tests): embed full bodies.
+	const skillText =
+		nativeCount > 0
+			? [
+					'Available massmith skills (load via the skill tool when relevant):',
+					...localSkills.map(skill => `- ${skill.name}: ${skill.description}`)
+				].join('\n')
+			: localSkills.map(skill => skill.content).join('\n\n');
 	registerTools(ctx, config);
 	registerPolicy(ctx, config);
 	registerPostExecute(ctx);
