@@ -4,7 +4,7 @@
 		{
 			"package": "./packages/opencode",
 			"options": {
-				"strict": true,
+				"strict": false,
 				"verbose": false
 			}
 		}

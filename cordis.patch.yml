@@ -5,6 +5,6 @@
   - id: massmith
     name: massmith-dsh
     config:
-      strict: true
+      strict: false
       verbose: false
       maxDiffLines: 400

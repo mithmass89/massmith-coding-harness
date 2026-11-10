@@ -25,7 +25,7 @@ baru (README dsh 0.1.0-rc.x tidak cukup).
 ```jsonc
 {
   "plugins": [
-    { "package": "./packages/opencode", "options": { "strict": true, "verbose": false } }
+    { "package": "./packages/opencode", "options": { "strict": false, "verbose": false } }
   ]
 }
 ```
@@ -33,7 +33,7 @@ baru (README dsh 0.1.0-rc.x tidak cukup).
 ## Command Code
 
 ```bash
-cmd --mod ./packages/commandcode/index.ts --mod-option strict=true
+cmd --mod ./packages/commandcode/index.ts --mod-option strict=false
 ```
 
 ## Catatan WASI / sandbox
