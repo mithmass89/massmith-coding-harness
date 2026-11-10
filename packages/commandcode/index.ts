@@ -24,7 +24,7 @@ function loadSkills(): string {
 const skillText = loadSkills();
 
 export default function (cmd: ModApi): void | Promise<void> {
-	cmd.addFlag('strict', { type: 'boolean', default: true, description: 'Block dangerous commands' });
+	cmd.addFlag('strict', { type: 'boolean', default: false, description: 'Block dangerous commands' });
 	cmd.addFlag('verbose', { type: 'boolean', default: false });
 
 	cmd.hooks({

@@ -25,12 +25,19 @@
 		"node": "^22.19.0 || >=24.0.0"
 	},
 	"scripts": {
-		"test": "node --import tsx packages/core/src/__tests__/core.test.ts",
+		"test": "node --import tsx packages/core/src/__tests__/core.test.ts && node --import tsx packages/dsh/src/__tests__/dsh.test.ts && node --import tsx packages/commandcode/index.test.ts",
+		"test:core": "node --import tsx packages/core/src/__tests__/core.test.ts",
+		"test:dsh": "node --import tsx packages/dsh/src/__tests__/dsh.test.ts",
+		"test:commandcode": "node --import tsx packages/commandcode/index.test.ts",
 		"verify:commandcode": "node --import tsx packages/commandcode/index.ts",
 		"verify:opencode": "node --import tsx packages/opencode/src/index.ts",
 		"dsh:web": "dsh --profile web --patch ./cordis.patch.yml",
 		"dsh:combined": "dsh --profile massmith-superagent --patch ./cordis.combined.patch.yml",
 		"dsh:combined:dump": "dsh --profile massmith-superagent --patch ./cordis.combined.patch.yml --dump-config",
 		"superagent:check": "cd vendor/dsh-superagent && pnpm check"
+	},
+	"devDependencies": {
+		"@deepseek-ai/dsh-tools": "0.0.1-rc.1",
+		"tsx": "^4.23.15"
 	}
 }

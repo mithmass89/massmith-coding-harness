@@ -29,7 +29,7 @@ export default Plugin.define({
 		await ctx.storage.set('loaded', true);
 		await ctx.storage.set('version', '0.1.0');
 
-		const strict = ctx.options.strict !== false;
+		const strict = ctx.options.strict === true;
 		const verbose = ctx.options.verbose === true;
 
 		await ctx.tool.namespace({

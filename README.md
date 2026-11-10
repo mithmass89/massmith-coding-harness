@@ -42,18 +42,19 @@
 
 | Fitur | Deskripsi |
 |:---|:---|
-| **Dangerous-command guard** | Blok `--no-verify`, `rm -rf /`, `drop table`, `git push --force`, `git reset --hard`, dll. Flag `strict=true` default. |
+| **Dangerous-command guard** | Blok `--no-verify`, `rm -rf /`, `drop table`, `git push --force`, `git reset --hard`, dll saat `strict=true`. Profil repo ini memakai `strict=false`. |
 | **Secret redaction** | Redaksi otomatis untuk `api_key=`, `Authorization: Bearer ...`, dan blok `-----BEGIN PRIVATE KEY-----`. |
-| **`massmith_diff_check`** | Tool read-only: cek file berubah, peringatan file tanpa test, dan batas `maxDiffLines` (400 default, bisa dikonfigurasi). |
-| **`massmith_repo_size`** | Tool read-only: jumlah tracked files (`git ls-files`). |
+| **`massmith_diff_check`** | Tool read-only dsh: baca `git diff --numstat` + untracked files, warning file tanpa test, dan enforce `maxDiffLines` (default 400); adapter lain memakai daftar file yang diberikan. |
+| **`massmith_verify`** | Tool dsh: jalankan diff check + `checks.test/typecheck/lint` lewat `ctx.shell` (sandbox dsh). |
+| **`massmith_repo_size`** | Tool read-only: jumlah tracked files (`git ls-files`), tersedia di ketiga adapter. |
 | **`/review`** | Command: review perubahan git untuk keamanan, correctness, dan missing tests. |
 | **`/massmith-status`** | Command: tampilkan `strict`, `verbose`, `cwd`. |
 | **`#note`** | Transform input `#note` → `noted.`, dan `/review <path>` → prompt review. |
-| **System-prompt tersuntik** | Aturan diff kecil & reviewable, tanpa destructive command, wajib test/typecheck/lint. |
+| **System-prompt tersuntik** | Aturan diff kecil & reviewable lewat `ctx.systemPrompt.section` (dsh) atau `appendSystemPrompt`/context hook (adapter lain). |
 | **Flag `DEPRECATED`** | Menandai hasil tool yang menyebut `DEPRECATED` agar agent mengangkatnya ke user. |
-| **Idempotent & retriable** | Semua adapter me-return cleanup/disposable; tidak ada state global yang bocor antar sesi. |
-| **Reversible (Cordis)** | `ctx.effect` + disposer, `inject: ['tools','commands','config']` — plugin bisa di-unload bersih tanpa sisa listener. |
-| **Config tervalidasi** | `strict`, `verbose`, `maxDiffLines` di-parse dengan default aman; `verbose` untuk debug telemetry `massmith.turn_end`. |
+| **Idempotent & retriable** | Registrasi effect-based; tidak ada state global yang bocor antar sesi. |
+| **Reversible (Cordis)** | `ctx.systemPrompt.section` + `ctx.tools.guard` + `ctx.on` ter-unwind otomatis; `inject: ['tools','commands']`. |
+| **Config tervalidasi** | `strict`, `verbose`, `maxDiffLines`, `checks`, `checkTimeoutMs`, `shellTools` di-parse dengan default aman. |
 | **Skills Markdown** | 4 skill bawaan di-load ke system prompt: `massmith-review`, `code-review`, `deployment`, `docs-bilingual`. |
 | **Cross-harness** | Satu core tanpa dependency, 3 adapter tipis — perbaikan cukup edit `packages/core`. |
 
@@ -99,9 +100,11 @@ massmith-coding-harness/
 │   │       ├── index.ts              ← Plugin.define({id, setup(ctx)})
 │   │       └── rpc.ts                ← kontrak RPC untuk TUI/GUI
 │   └── dsh/
-│       ├── package.json              ← {"dsh":{"bundle":"./cordis.patch.yml"}}, keywords dsh-plugin
+│       ├── package.json            ← {"dsh":{"bundle":"./cordis.patch.yml"}}, keywords dsh-plugin
 │       ├── cordis.patch.yml
-│       └── src/index.ts              ← Cordis plugin: function (ctx) + inject ['tools','commands','config']
+│       └── src/
+│           ├── index.ts            ← Cordis: apply(ctx, config) + inject ['tools','commands']
+│           └── __tests__/dsh.test.ts
 ├── skills/
 │   ├── massmith-review/SKILL.md      ← review diff guardrail sebelum commit
 │   ├── code-review/SKILL.md          ← framework review umum
@@ -161,12 +164,12 @@ cmd -p "halo, apa kabar?" --mod ./packages/commandcode/index.ts   # headless san
 ### Flag
 
 ```bash
-cmd --mod ./packages/commandcode/index.ts --mod-option strict=true --mod-option verbose=false
+cmd --mod ./packages/commandcode/index.ts --mod-option strict=false --mod-option verbose=false
 ```
 
 | Flag | Default | Fungsi |
 |:---|:---:|:---|
-| `strict` | `true` | Blok dangerous command di `beforeToolCall`. |
+| `strict` | `false` | Blok dangerous command di `beforeToolCall` saat `true`. |
 | `verbose` | `false` | Tampilkan contoh extra di `onStop`. |
 
 Kill switch: `cmd --safe-mode` (hanya built-in mods) atau `{"mods":{"disableAll":true}}`.
@@ -192,7 +195,7 @@ Kill switch: `cmd --safe-mode` (hanya built-in mods) atau `{"mods":{"disableAll"
   "plugins": [
     {
       "package": "./packages/opencode",
-      "options": { "strict": true, "verbose": false }
+      "options": { "strict": false, "verbose": false }
     }
   ]
 }
@@ -225,7 +228,7 @@ Passthrough `ctx.options` dari `opencode.jsonc`:
 ```jsonc
 {
   "plugins": [
-    { "package": "./packages/opencode", "options": { "strict": true, "verbose": false } }
+    { "package": "./packages/opencode", "options": { "strict": false, "verbose": false } }
   ]
 }
 ```
@@ -251,13 +254,13 @@ Server part (`massmith-coding-harness`) jalan di **background server** OpenCode 
 
 | Area | Status | Catatan |
 |:---|:---|:---|
-| Plugin shape | ✅ | `export default function (ctx)` + `inject: ['tools','commands','config']` |
-| `ctx.tools.register` / `ctx.commands.register` | ✅ | Melalui `ctx.effect` + disposer |
-| Events | ✅ | `tools/pre-execute` waterfall, `tools/post-execute`, `agent/pre-step`, `turn/end` |
-| Disposer / cleanup | ✅ | LIFO drain di closure return — reversible |
-| Config validation | ✅ | `parseConfig()` dengan default aman; `verbose` untuk debug telemetry |
+| Plugin shape | ✅ | `export function apply(ctx, config)` + `inject: ['tools','commands']` |
+| `ctx.tools.register` / `ctx.commands.register` | ✅ | `defineTool` + command `handler`; registrasi otomatis effect |
+| Events | ✅ | `tools/pre-execute`/`tools/post-execute`, `turn/end`, `ctx.systemPrompt.section` |
+| Disposer / cleanup | ✅ | Registrasi Cordis auto-unwind; `ctx.effect` untuk prompt section |
+| Config validation | ✅ | `parseConfig()` manual + default aman; `checks`, `checkTimeoutMs`, `shellTools` |
 | Bundle YAML | ✅ | 1 row per plugin, `dsh.bundle` di `package.json`, `dsh-plugin` keyword |
-| Type safety | ✅ | `Context` dari `@deepseek-ai/cordis` + declaration merging |
+| Type safety | ✅ | `Context` dari `@deepseek-ai/cordis` + `defineTool` dari `@deepseek-ai/dsh-tools` |
 
 ### Cara pakai
 
@@ -276,20 +279,24 @@ dsh web          # browser UI
 dsh headless     # one-shot tanpa server
 ```
 
-> ⚠️ `dsh` masih **developer preview** (`0.1.0-rc.x`) — breaking changes mungkin. Pin versi yang sama dengan `dsh --version` saat `plugin add`.
+> ⚠️ `dsh` masih **developer preview** — breaking changes mungkin. Plugin ini mem-pin `@deepseek-ai/dsh-tools@0.0.1-rc.1` dan `@deepseek-ai/cordis@^4.1.0`; samakan dengan versi dsh yang dipakai.
 
 ---
 
 ## Tools, commands, hooks, flags
 
-### Tools (read-only — tersedia di plan mode)
+### Tools
+
+`massmith_diff_check` dan `massmith_repo_size` read-only; `massmith_verify` menjalankan perintah check.
 
 | Nama | Command Code | OpenCode | dsh |
 |:---|:---|:---|:---|
-| Diff check | `massmith_diff_check` | `massmith/diff_check` | `massmith_diff_check` (via `ctx.tools`) |
-| Repo size | `massmith_repo_size` | `massmith/repo_size` | — (ditambahkan via `ctx.tools` bila perlu) |
+| Diff check | `massmith_diff_check` | `massmith/diff_check` | `massmith_diff_check` |
+| Verify | — | — | `massmith_verify` |
+| Repo size | `massmith_repo_size` | `massmith/repo_size` | `massmith_repo_size` |
 
-Signature: `{ files?: string[], maxDiffLines?: number }` → teks ringkasan + daftar warning.
+`massmith_diff_check` signature: `{ files?: string[], maxDiffLines?: number }` → teks ringkasan + daftar warning.
+`massmith_verify` dan `massmith_repo_size` tidak menerima parameter.
 
 ### Commands
 
@@ -303,10 +310,10 @@ Signature: `{ files?: string[], maxDiffLines?: number }` → teks ringkasan + da
 
 | Command Code `ModApi` | OpenCode | Cordis |
 |:---|:---|:---|
-| `hooks.beforeToolCall` → block | `ctx.tool.hook("execute.before")` → rewrite input | `tools/pre-execute` waterfall → reject |
-| `hooks.afterToolCall` → `additionalContext` | `ctx.tool.hook("execute.after")` → mutate `result` | `tools/post-execute` → mutate `event.result` |
-| `hooks.appendSystemPrompt` | `ctx.session.hook("context")` → `event.system.push` | `agent/pre-step` → inject system message |
-| `hooks.transformInput` | `ctx.session.hook("prompt")` | — (dilakukan di `agent/pre-step`) |
+| `hooks.beforeToolCall` → block | `ctx.tool.hook("execute.before")` → rewrite input | `ctx.tools.guard` (monotonic) + fallback `tools/pre-execute` waterfall |
+| `hooks.afterToolCall` → `additionalContext` | `ctx.tool.hook("execute.after")` → mutate `result` | `tools/post-execute` → replace content/redact |
+| `hooks.appendSystemPrompt` | `ctx.session.hook("context")` → `event.system.push` | `ctx.systemPrompt.section` |
+| `hooks.transformInput` | `ctx.session.hook("prompt")` | — (tidak ada transform input di adapter dsh) |
 | `hooks.onRunEnd` / `onStop` | `ctx.event.subscribe` | `turn/end` event |
 | `hooks.onPermissionRequest` (via `onPermissionRequest`) | `ctx.permission.hook("evaluate")` → `deny` | `ctx.sandbox` / `fs/*` policy (future) |
 
@@ -314,9 +321,12 @@ Signature: `{ files?: string[], maxDiffLines?: number }` → teks ringkasan + da
 
 | Flag | Type | Default | Di mana |
 |:---|:---|:---:|:---|
-| `strict` | boolean | `true` | semua adapter |
+| `strict` | boolean | `false` | semua adapter |
 | `verbose` | boolean | `false` | semua adapter |
 | `maxDiffLines` | number | `400` | dsh config |
+| `checks` | object | `{}` | dsh config: `test`, `typecheck`, `lint` |
+| `checkTimeoutMs` | number | `120000` | dsh config |
+| `shellTools` | string[] | `["bash","pwsh"]` | dsh config |
 
 ---
 
@@ -363,7 +373,7 @@ Karena id, nama tool/command, dan namespace storage berbeda, keduanya **tidak sa
 {
   "$schema": "https://opencode.ai/config.json",
   "plugins": [
-    { "package": "./plugins/massmith", "options": { "strict": true, "verbose": false } },
+    { "package": "./plugins/massmith", "options": { "strict": false, "verbose": false } },
     { "package": "./plugins/dsh-superagent", "options": { "mention": "@superagent", "requireMention": true, "autoMode": true, "pollIntervalMs": 0 } }
   ]
 }
@@ -436,9 +446,10 @@ Butuh Node `^22.19.0 || >=24.0.0` dan `tsx` untuk jalan tanpa build. Core dituli
 pnpm test
 # atau langsung:
 node --import tsx packages/core/src/__tests__/core.test.ts
+node --import tsx packages/dsh/src/__tests__/dsh.test.ts
 ```
 
-`core.test.ts` meng-assert:
+`core.test.ts` dan `dsh.test.ts` meng-assert:
 
 - `--no-verify` di-block saat `strict=true`
 - safe command lolos
@@ -446,9 +457,14 @@ node --import tsx packages/core/src/__tests__/core.test.ts
 - `redactSecrets()` meredaksi `api_key=`
 - `isDangerousCommand()` mendeteksi `git push --force`
 - `checkDiff(['a.ts'])` memberi warning test hilang
+- `parseGitNumstat()` membaca additions/deletions dan binary
+- `checkDiff()` meng-enforce `maxDiffLines` bila diff stats tersedia
 - `summarizeTurn(3, false)` format benar
+- adapter dsh mendaftarkan 3 tool + 3 command + guard saat `apply()` dipanggil
+- guard menolak dangerous command; fallback `tools/pre-execute` tetap memanggil `next()`
+- `post-execute` meredaksi secret dan menandai `DEPRECATED`
 
-Output: `core.test.ts: all assertions passed`
+Output: `core.test.ts: all assertions passed` dan `dsh.test.ts: all assertions passed`
 
 ### Perintah verifikasi per-adapter
 
@@ -492,6 +508,7 @@ dsh plugin add ./packages/dsh
 ## Keamanan
 
 - **Tidak ada sandbox** untuk mod/plugin — install hanya kode yang kamu percaya. Gunakan `cmd mods inspect` / `cmd --safe-mode` untuk audit.
+- `massmith_verify` menjalankan `checks.*` lewat `ctx.shell`, sehingga mengikuti executor/sandbox dsh. Guard deny-list tetap lapis pertama, bukan pengganti sandbox.
 - Untuk OpenCode, gunakan `-` prefix di `plugins` atau `-*` untuk kill switch per-plugin.
 - Untuk `dsh`, layering berarti patch kamu bisa meng-override bundle bawaan — selalu cek dengan `--dump-config` sebelum boot.
 - Jika kamu menemukan kerentanan, buka issue dengan label `security` sebelum fork.
@@ -502,7 +519,7 @@ dsh plugin add ./packages/dsh
 
 1. **Provider baru** — `cmd.addProvider` / `ctx.provider.transform` / adapter `ctx.llm`.
 2. **MCP server** — `ctx.mcp.transform` (OpenCode) atau register di `ctx.tools` (Cordis).
-3. **Skills** — ✅ terimplementasi (via markdown `composeSystemPrompt(extra)`).
+3. **Skills** — ✅ terpasang via prompt section; migrasi ke `skill-filesystem`/`tool-skill` native adalah fase berikutnya.
 4. **GUI (OpenCode Desktop)** — tambahkan `./gui-experimental` (`Command`, `Panel`, `SettingsPage`) agar panel/command muncul di UI Desktop.
 5. **Packaging**:
    - Command Code: tambah `keywords: ["cmd-mod"]` (sudah ada), publish npm, lalu daftar ke `mods/registry.json` di `CommandCodeAI/command-code`.
