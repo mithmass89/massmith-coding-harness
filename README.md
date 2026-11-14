@@ -1,9 +1,9 @@
 <div align="center">
 
-# 🛡️ Massmith Coding Harness
+# 🛡️ WiraFlow
 
-**Satu guardrail untuk semua harness AI coding: Command Code · OpenCode · DeepSeek Harness.**
-*Massmith guardrails keep bad diffs out of your repo. Antislop keeps AI slop out of your UI.*
+**Satu workflow untuk semua harness AI coding: Command Code · OpenCode · DeepSeek Harness.**
+*Guardrails keep bad diffs out of your repo. Antislop keeps AI slop out of your UI. Tickets keep work on track.*
 
 [![MIT](https://img.shields.io/badge/license-MIT-4c9)](LICENSE)
 [![Node](https://img.shields.io/badge/node-22%2B%20%7C%2024%2B-3b82f6)](https://nodejs.org)
@@ -464,6 +464,7 @@ MIT. Lihat [LICENSE](LICENSE). Lisensi skill vendored ikut di folder masing-masi
 
 <div align="center">
 
-*Built for Command Code, OpenCode, and DeepSeek Harness — one core, three adapters, zero copy-paste. Filtered by antislop, directed by DESIGN.md.*
+*WiraFlow — built for Command Code, OpenCode, and DeepSeek Harness — one core, three adapters, zero copy-paste. Filtered by antislop, directed by DESIGN.md.*
+*(Nama package/plugin-id tetap `massmith-coding-harness` agar install lama tidak rusak.)*
 
 </div>
