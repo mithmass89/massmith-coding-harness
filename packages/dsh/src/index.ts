@@ -25,7 +25,7 @@ const skillDirs = [
 	'using-superpowers',
 	'unit-test',
 	'code-review-and-quality',
-	'context-engineering'
+	'context-engineering', 'antislop', 'antislop-ui', 'antislop-copywriting', 'antislop-human', 'antislop-layoutmobile', 'antislop-code'
 ];
 
 interface LocalSkill {

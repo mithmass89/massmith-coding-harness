@@ -8,7 +8,7 @@ import {
 	validateCommand
 } from '../../core/src/index.ts';
 
-const skillDirs = ['massmith-review', 'code-review', 'deployment', 'docs-bilingual', 'ui-ux-pro-max', '3dviz-pro-max', 'frontend-design', 'using-superpowers', 'unit-test', 'code-review-and-quality', 'context-engineering'];
+const skillDirs = ['massmith-review', 'code-review', 'deployment', 'docs-bilingual', 'ui-ux-pro-max', '3dviz-pro-max', 'frontend-design', 'using-superpowers', 'unit-test', 'code-review-and-quality', 'context-engineering', 'antislop', 'antislop-ui', 'antislop-copywriting', 'antislop-human', 'antislop-layoutmobile', 'antislop-code'];
 const skillsBase = new URL('../../../skills/', import.meta.url);
 
 function stripQuotes(value: string): string {

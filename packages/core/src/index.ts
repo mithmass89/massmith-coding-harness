@@ -71,7 +71,7 @@ export function composeSystemPrompt(extra?: string): string {
 		'Prefer small, reviewable diffs. Do not add features beyond the request.',
 		'Never use --no-verify, force push, or destructive shell commands without asking.',
 		'Run relevant tests/typecheck/lint after code changes and report failures.',
-		'Write self-documenting code; only add comments where logic is not obvious.'
+		'Write self-documenting code; only add comments where logic is not obvious.', 'For UI work, read DESIGN.md for direction, then apply antislop filter (R-01 to R-40): no generic gradients, no fake stats, honest placeholders, WCAG AA, keyboard usable, mobile perfect, and end with Delivery Gate PASS/FAIL report.'
 	].join(' ');
 	return extra ? `${base}\n\n${extra}` : base;
 }
