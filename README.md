@@ -250,7 +250,7 @@ dsh web                             # browser UI · dsh headless = one-shot
 
 ## 🧠 Skills
 
-**Cara kerja:** adapter dsh mendaftarkan tiap `skills/*/SKILL.md` ke registry native (`ctx.skills.register`, `source: 'bundled'`) — model meload isi penuh on-demand via `tool-skill`, prompt hanya membawa katalog. Di host tanpa service `skills` (atau adapter Command Code/OpenCode), seluruh isi di-embed ke system prompt sebagai fallback. Frontmatter yang dibaca: `name`, `description`, `disable-model-invocation`, `userInvocable`.
+**Cara kerja:** prompt hanya membawa **katalog** (`nama: deskripsi`); AI memilih skill yang relevan lalu meload isi penuhnya via tool loader. Di dsh: registrasi native ke `ctx.skills` (lazy via `tool-skill`). Di OpenCode: tool `massmith/skill`. Di Command Code: tool `massmith_skill_load`. Loader hanya menerima nama persis di allowlist (path traversal ditolak); skill yang file-nya hilang dilewati diam-diam agar boot tidak gagal. Frontmatter yang dibaca: `name`, `description`, `disable-model-invocation`, `userInvocable`.
 
 ### Inti guardrail (bawaan)
 

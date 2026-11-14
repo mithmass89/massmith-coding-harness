@@ -6,9 +6,11 @@ function assert(cond: boolean, msg: string) {
 }
 
 const flags: Record<string, { type?: string; default?: unknown }> = {};
+const tools: Record<string, any> = {};
 let beforeToolCall:
 	| ((event: { toolName: string; input: unknown }) => Promise<unknown>)
 	| undefined;
+let appendSystemPrompt: (() => string) | undefined;
 
 const cmd = {
 	addFlag(name: string, options: { type?: string; default?: unknown }) {
@@ -17,7 +19,8 @@ const cmd = {
 	getFlag(name: string) {
 		return flags[name]?.default;
 	},
-	addTool() {
+	addTool(def: any) {
+		tools[def.schema.name] = def;
 		return { dispose() {} };
 	},
 	addCommand() {
@@ -26,8 +29,9 @@ const cmd = {
 	addRenderer() {
 		return { dispose() {} };
 	},
-	hooks(hooks: { beforeToolCall?: typeof beforeToolCall }) {
+	hooks(hooks: { beforeToolCall?: typeof beforeToolCall; appendSystemPrompt?: () => string }) {
 		beforeToolCall = hooks.beforeToolCall;
+		appendSystemPrompt = hooks.appendSystemPrompt;
 		return { dispose() {} };
 	},
 	on() {
@@ -55,5 +59,32 @@ const blocked = (await beforeToolCall?.({
 	input: { command: 'git commit --no-verify' }
 })) as { block?: boolean } | undefined;
 assert(blocked?.block === true, 'strict=true should block dangerous command');
+
+// Lazy skills: prompt hanya katalog, isi penuh via massmith_skill_load.
+const prompt = appendSystemPrompt?.() ?? '';
+assert(prompt.includes('Available massmith skills'), 'prompt should carry the skill catalog');
+assert(prompt.includes('unit-test'), 'catalog should list unit-test');
+assert(
+	!prompt.includes('AUTONOMOUS MODE'),
+	'prompt must not embed full skill bodies (lazy-load)'
+);
+
+const skillTool = tools['massmith_skill_load'];
+assert(!!skillTool, 'massmith_skill_load tool missing');
+const loaded = await skillTool.run({ input: { name: 'unit-test' } });
+assert(
+	loaded?.ok === true && loaded.content[0]?.text.includes('AUTONOMOUS MODE'),
+	'skill loader should return the full SKILL.md body'
+);
+const traversal = await skillTool.run({ input: { name: '../../package' } });
+assert(
+	traversal?.ok === true && traversal.content[0]?.text.startsWith('unknown skill:'),
+	'skill loader must reject path traversal'
+);
+const empty = await skillTool.run({ input: {} });
+assert(
+	empty?.ok === true && empty.content[0]?.text.startsWith('unknown skill:'),
+	'skill loader must reject empty name'
+);
 
 console.log('commandcode.test.ts: all assertions passed');

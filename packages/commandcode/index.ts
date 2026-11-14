@@ -8,20 +8,56 @@ import {
 	validateCommand
 } from '../core/src/index.ts';
 
-const skillDirs = ['massmith-review', 'code-review', 'deployment', 'docs-bilingual'];
-function loadSkills(): string {
-	const texts: string[] = [];
-	for (const dir of skillDirs) {
-		try {
-			texts.push(readFileSync(new URL(`../../skills/${dir}/SKILL.md`, import.meta.url), 'utf8'));
-		} catch {
-			// Skill files are optional; a missing skill never breaks the mod boot.
+const skillDirs = ['massmith-review', 'code-review', 'deployment', 'docs-bilingual', 'ui-ux-pro-max', '3dviz-pro-max', 'frontend-design', 'using-superpowers', 'unit-test', 'code-review-and-quality', 'context-engineering'];
+const skillsBase = new URL('../../skills/', import.meta.url);
+
+function stripQuotes(value: string): string {
+	const trimmed = value.trim();
+	if (trimmed.length >= 2) {
+		const first = trimmed[0];
+		const last = trimmed[trimmed.length - 1];
+		if ((first === '"' && last === '"') || (first === "'" && last === "'")) {
+			return trimmed.slice(1, -1).trim();
 		}
 	}
-	return texts.join('\n\n');
+	return trimmed;
 }
 
-const skillText = loadSkills();
+function parseSkillMeta(raw: string): { name: string; description: string } {
+	const frontmatter = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+	const meta: Record<string, string> = {};
+	if (frontmatter) {
+		for (const line of frontmatter[1].split(/\r?\n/)) {
+			const match = line.match(/^([\w-]+)\s*:\s*(.+)$/);
+			if (match) meta[match[1]] = stripQuotes(match[2]);
+		}
+	}
+	return { name: meta.name || '', description: meta.description || '' };
+}
+
+function loadSkillBody(dir: string): string | undefined {
+	// Allowlist-only: cegah path traversal, nama harus persis di skillDirs.
+	if (!skillDirs.includes(dir)) return undefined;
+	try {
+		return readFileSync(new URL(`${dir}/SKILL.md`, skillsBase), 'utf8');
+	} catch {
+		return undefined;
+	}
+}
+
+/** Katalog ringan untuk prompt — AI memilih skill, isi penuh di-load via massmith_skill_load. */
+function skillCatalog(): string {
+	const lines = ['Available massmith skills (load the full SKILL.md via massmith_skill_load when relevant):'];
+	for (const dir of skillDirs) {
+		const body = loadSkillBody(dir);
+		if (body === undefined) continue;
+		const meta = parseSkillMeta(body);
+		lines.push(`- ${meta.name || dir}: ${meta.description || dir}`);
+	}
+	return lines.join('\n');
+}
+
+const skillText = skillCatalog();
 
 export default function (cmd: ModApi): void | Promise<void> {
 	cmd.addFlag('strict', { type: 'boolean', default: false, description: 'Block dangerous commands' });
@@ -111,6 +147,39 @@ export default function (cmd: ModApi): void | Promise<void> {
 				...result.warnings.map(w => `- ${w}`)
 			];
 			return { ok: true, content: [{ type: 'text', text: lines.join('\n') }] };
+		}
+	});
+
+	cmd.addTool({
+		schema: {
+			name: 'massmith_skill_load',
+			description:
+				'Load the full body of one massmith skill (SKILL.md) on demand. Pick the name from the skill catalog in the system prompt; call only when the skill is relevant to the task.',
+			input_schema: {
+				type: 'object',
+				properties: {
+					name: { type: 'string', description: 'Skill name, e.g. unit-test' }
+				},
+				required: ['name'],
+				additionalProperties: false
+			}
+		},
+		readOnly: true,
+		run: async ({ input }) => {
+			const name = typeof input?.name === 'string' ? input.name.trim() : '';
+			const body = name ? loadSkillBody(name) : undefined;
+			if (body === undefined) {
+				return {
+					ok: true,
+					content: [
+						{
+							type: 'text',
+							text: `unknown skill: ${name || '(empty)'}. Available: ${skillDirs.join(', ')}`
+						}
+					]
+				};
+			}
+			return { ok: true, content: [{ type: 'text', text: body }] };
 		}
 	});
 
