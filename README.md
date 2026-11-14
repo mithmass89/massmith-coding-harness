@@ -89,19 +89,23 @@ dsh --profile web --patch ./cordis.patch.yml        # DeepSeek Harness
 
 ## 📊 Perbandingan: Dengan vs Tanpa Harness
 
-| Aspek | Tanpa Harness (42/100) | Dengan Massmith Harness (98/100) |
+| Aspek | Tanpa harness | Dengan harness (efek nyata) |
 |:---|:---|:---|
-| **Keamanan** | Perintah berbahaya lolos, secret bocor ke log | Blok `--no-verify`, `rm -rf /`, `push --force`; redaksi `api_key`/`Bearer` otomatis |
-| **Kualitas code** | Diff besar, tanpa test, tanpa review | Diff kecil dan reviewable, warning file tanpa test, wajib test/typecheck/lint |
-| **Konsistensi** | System prompt acak, gaya beda-beda | Prompt disiplin: 1 core → 3 adapter |
-| **UI** | Gradient ungu-biru default, glass di semua permukaan, fake stats, fake terminal | Antislop filter + DESIGN.md: palet beralasan, CTA spesifik, tanpa klaim palsu, kontras AA |
-| **Operasional** | Error terlambat ketahuan | Terminal check hijau, skor 98/100 sebelum deploy |
+| **Keamanan perintah** | Perintah jalan apa adanya, tidak ada yang menilai pola berbahaya | `strict=false` (default repo): pola berbahaya terdeteksi + alasan dicatat, tidak diblokir. `strict=true`: diblokir (rewrite/deny). Pola: `--no-verify`, `rm -rf /`, `drop table`, `git push --force`, `git reset --hard` |
+| **Secret di prompt/log** | `api_key`/`Bearer`/private key tampil apa adanya | Diredaksi otomatis di prompt masuk + hasil tool (`[REDACTED]`). Bukan pengganti rotasi secret yang sudah bocor |
+| **Kualitas diff** | Tidak ada cek otomatis | `massmith_diff_check` baca `git diff --numstat` + untracked, warning file tanpa test pendamping + enforce `maxDiffLines`. Harness memberi warning, manusia yang memutuskan |
+| **Test/typecheck/lint** | Jalan manual, sering kelupaan | `massmith_verify` + `/verify` menjalankan `checks` yang kamu konfigurasi via `ctx.shell`. Default `checks={}` = tidak ada check, jadi tulis dulu (contoh: `test: pnpm test`) |
+| **Konsistensi antar host** | Prompt acak per tool | 1 core prompt + katalog 17 skill lazy-load, sama di Command Code, OpenCode, dsh. Full skill dimuat hanya saat relevan |
+| **UI anti-slop** | Tidak ada filter, slop lolos | Workflow `DESIGN.md` + antislop R-01 s/d R-40 + Delivery Gate PASS/FAIL + `contrast-check.py`. Tidak otomatis mempercantik file lama |
+| **Operasional** | Error ketahuan saat push/CI | Cek lebih awal via `/review`, `/verify`, `/massmith-status`. Seberapa hijau tergantung `checks` yang kamu isi |
+
+> Skor **98/100** dan **42/100** di bawah adalah skor ilustrasi di file demo (menghitung guard aktif vs mati di playground), bukan benchmark independen. Jangan dibaca sebagai jaminan skor di proyekmu.
 
 > DeepSeek Harness fokus di *extensibility* ("everything is a plugin" via Cordis), bukan guardrail bawaan. Massmith menambah layer guardrail di atas dsh, Command Code, dan OpenCode. Antislop menambah layer filter UI di atas `ui-ux-pro-max` dan `frontend-design`.
 
-**Demo live** — dua single-HTML di `demo/` (tanpa dependency selain Google Fonts, playground pakai `validateCommand()` asli dari core):
-- [`demo/wirasolution-dengan-harness.html`](demo/wirasolution-dengan-harness.html) — **98/100**, badge `HARNESS AKTIF`, playground memblokir perintah berbahaya.
-- [`demo/wirasolution-tanpa-harness.html`](demo/wirasolution-tanpa-harness.html) — **42/100**, badge `TANPA HARNESS`, semua perintah langsung "DIJALANKAN".
+**Demo live** — dua single-HTML di `demo/` (tanpa dependency selain Google Fonts, playground pakai `validateCommand()` asli dari core, mode demo `strict=true` agar efek blokir terlihat):
+- [`demo/wirasolution-dengan-harness.html`](demo/wirasolution-dengan-harness.html) — ilustrasi **98/100**, badge `HARNESS AKTIF`, playground memblokir perintah berbahaya (demo pakai `strict=true`; default repo `strict=false` = deteksi saja).
+- [`demo/wirasolution-tanpa-harness.html`](demo/wirasolution-tanpa-harness.html) — ilustrasi **42/100**, badge `TANPA HARNESS`, semua perintah langsung "DIJALANKAN", overlay risiko.
 
 ---
 
